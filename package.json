@@ -1,0 +1,12 @@
+{
+  "name": "xkbot",
+  "version": "0.0.1",
+  "description": "QQ bot uses CoolQ.",
+  "main": "main.js",
+  "scripts": {
+    "test": "node main.js"
+  },
+  "author": "flaribbit",
+  "license": "ISC",
+  "dependencies": {}
+}
