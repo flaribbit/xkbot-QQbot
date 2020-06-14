@@ -1,5 +1,6 @@
 const https = require("https");
-const cheerio = require("cheerio")
+const cheerio = require("cheerio");
+const STRING_AT="[CQ:at,qq=]";
 
 function getHTML(url, callback) {
     https.get(url, function (res) {
@@ -28,7 +29,7 @@ function getHTML(url, callback) {
     });
 }
 
-exports.search = function (keyword) {
+function search(keyword) {
     getHTML("https://baike.baidu.com/item/"+keyword,function (data){
         var $=cheerio.load(data);
         var content=$(".lemma-summary").text().trim();
@@ -37,4 +38,23 @@ exports.search = function (keyword) {
         }
         console.log(content);
     });
+}
+
+function SendGroupMessage(ws,group_id,message){
+    ws.send(JSON.stringify({
+        "action": "send_group_msg",
+        "params": {
+            "group_id": group_id,
+            "message": message
+        }
+    }));
+}
+
+exports.check = function (message) {
+    if(message.indexOf(STRING_AT)==0){
+        var res=message.replace(STRING_AT,"").trim().match(/(.*?)是(谁|什么)/);
+        if(res){
+            search(res[1]);
+        }
+    }
 }
