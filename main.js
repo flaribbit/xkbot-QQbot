@@ -14,7 +14,7 @@ ws.onmessage=function(ev){
     }
 }
 
-function SendGroupMessage(ws,group_id,message){
+function SendGroupMessage(group_id,message){
     ws.send(JSON.stringify({
         "action": "send_group_msg",
         "params": {

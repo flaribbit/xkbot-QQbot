@@ -30,19 +30,21 @@ function getHTML(url, callback) {
 
 exports.check = function (message, send) {
     var text = message.message;
-    var at = `[CQ:at,qq=${self_id}]`;
+    var at = `[CQ:at,qq=${message.self_id}]`;
     if (text.indexOf(at) == 0) {
-        text = message.replace(at, "").trim().match(/(.*?)是(谁|什么)/);
+        var res = text.replace(at, "").trim().match(/(.*?)是(谁|啥|什么)/);
         if (res) {
             getHTML("https://baike.baidu.com/item/" + res[1], function (data, error) {
                 if (error) {
                     console.log(error);
+                    send(message.group_id,error);
                 } else {
                     var $ = cheerio.load(data);
                     var content = $(".lemma-summary").text().trim();
                     if (content.length > 200) {
                         content = content.substr(0, 200) + "...";
                     }
+                    send(message.group_id,content);
                 }
             });
         }
