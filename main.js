@@ -1,6 +1,7 @@
 const WebSocket=require("ws")
 var baike=require("./baike")
 var dice=require("./dice")
+var zhihu=require("./zhihu")
 
 var ws=new WebSocket("ws://127.0.0.1:6700")
 ws.onopen=function(){
@@ -12,6 +13,7 @@ ws.onmessage=function(ev){
         // console.log(message);
         dice.check(message,SendGroupMessage);
         baike.check(message,SendGroupMessage);
+        zhihu.check(message,SendGroupMessage);
     }
 }
 
