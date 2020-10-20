@@ -1,4 +1,3 @@
-
 var http = require('http');
 var baike = require("./baike")
 var dice = require("./dice")
@@ -21,18 +20,7 @@ http.createServer(function (req, res) {
 }).listen(5701);
 
 function SendGroupMessage(group_id, message) {
-    var req = http.request("http://localhost:5700", {
-        path: "/send_group_msg",
-        method: "POST",
-    }, res => {
-        res.on("data", data => {
-            console.log(data.toString());
-        });
-    });
-    req.write(JSON.stringify({
-        "group_id": group_id,
-        "message": message
-    }));
+    var req = http.request("http://localhost:5700/send_group_msg?group_id=" + group_id + "&message=" + encodeURIComponent(message));
     req.end();
-    console.log("发送");
+    console.log("已发送: ", message);
 }
