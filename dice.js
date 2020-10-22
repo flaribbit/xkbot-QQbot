@@ -25,15 +25,23 @@ exports.check = function (message) {
         if (res[1]) {
             if (res[1] == "地主") {
                 send(target, `${sender}抽到了: ${doudizhu(20)}`);
+                return true;
             } else if (res[1] == "农民" || res[1] == "斗地主") {
                 send(target, `${sender}抽到了: ${doudizhu(17)}`);
+                return true;
             } else if (res[1] == "麻将") {
                 send(target, `${sender}摸到了: ${mahjong()}`);
+                return true;
             }
-            return true;
+            return false;
         } else {
             send(target, "请输入要抽什么牌哦（当前支持：斗地主、麻将）");
+            return false;
         }
+    }
+    res = text.match(/[\.。]jrrp/);
+    if (res) {
+        send(target, `${sender}今天的人品值是: ${((Math.floor(+new Date() / 86400000 + 8 / 24) + message.sender.user_id) * 9301 + 49297) % 233280 % 100}`);
     }
 }
 
