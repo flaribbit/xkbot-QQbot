@@ -26,7 +26,11 @@ function word(send, target, w) {
             var data = JSON.parse(chunk);
             if (data.data && data.data.explain) {
                 var d = data.data.explain;
-                send(target, d.word + "\n" + d.phonetic["英"] + d.phonetic["美"] + "\n" + d.translation.join("\n"));
+                try {
+                    send(target, d.word + "\n" + d.phonetic["英"] + d.phonetic["美"] + "\n" + d.translation.join("\n"));
+                } catch (error) {
+                    send(target, error.toString());
+                }
             } else {
                 console.log("failed");
             }
