@@ -20,7 +20,16 @@ http.createServer(function (req, res) {
 }).listen(5701);
 
 function SendGroupMessage(group_id, message) {
-    var req = http.request("http://localhost:5700/send_group_msg?group_id=" + group_id + "&message=" + encodeURIComponent(message));
+    var req = http.request("http://localhost:5700/send_group_msg", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    req.write(JSON.stringify({
+        "group_id": group_id,
+        "message": message
+    }));
     req.end();
     console.log("已发送: ", message);
 }
