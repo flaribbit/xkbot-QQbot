@@ -5,13 +5,13 @@ var zhihu = require("./zhihu");
 var trivia = require("./trivia");
 
 http.createServer(function (req, res) {
-    var data = "";
+    var chunk = "";
     req
-        .on("data", d => data += d)
+        .on("data", d => chunk += d)
         .on("end", () => {
-            var message = JSON.parse(data);
+            var message = JSON.parse(chunk);
             if (message.message_type) {
-                console.log(data);
+                console.log(chunk);
                 dice.check(message);
                 trivia.check(message);
             }
