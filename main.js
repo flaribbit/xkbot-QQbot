@@ -3,6 +3,7 @@ var baike = require("./baike");
 var dice = require("./dice");
 var zhihu = require("./zhihu");
 var trivia = require("./trivia");
+var translate = require("./translate");
 
 http.createServer(function (req, res) {
     var chunk = "";
@@ -14,6 +15,7 @@ http.createServer(function (req, res) {
                 console.log(chunk);
                 dice.check(message);
                 trivia.check(message);
+                translate.check(message);
             }
         });
     res.end();
