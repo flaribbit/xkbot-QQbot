@@ -27,9 +27,7 @@ exports.check = function (message) {
     var target = message.group_id || message.user_id;
     var res;
     if (message.message_type == "group") {
-        //没有待回答的问题就跳过
         var st = status[message.group_id];
-        if (!st) return;
         //管理员功能
         if (true) {
             if (text == "测试随机题目") {
@@ -38,11 +36,13 @@ exports.check = function (message) {
                 status[message.group_id] = { id: id, wrong: [] };
             } else if (text == "公布答案") {
                 var msg = "正确答案是: " + question[st.id].answer;
-                if (q.analytic) msg += "\n" + question[st.id].analytic;
+                if (question[st.id].analytic) msg += "\n" + question[st.id].analytic;
                 send(target, msg);
                 delete status[message.group_id];
             }
         }
+        //没有待回答的问题就跳过
+        if (!st) return;
         //忽略不是回答问题的消息
         if (!text.match(/^[A-Da-d]$/)) return;
         //如果答过了就跳过
