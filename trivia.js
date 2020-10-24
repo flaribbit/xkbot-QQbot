@@ -27,6 +27,9 @@ exports.check = function (message) {
     var target = message.group_id || message.user_id;
     var res;
     if (message.message_type == "group") {
+        //没有待回答的问题就跳过
+        var st = status[message.group_id];
+        if (!st) return;
         //管理员功能
         if (true) {
             if (text == "测试随机题目") {
@@ -34,18 +37,14 @@ exports.check = function (message) {
                 send(target, getTrivia(id));
                 status[message.group_id] = { id: id, wrong: [] };
             } else if (text == "公布答案") {
-                var q = question[status[message.group_id].id];
-                var msg = "正确答案是: " + q.answer;
-                if (q.analytic) msg += "\n" + q.analytic;
+                var msg = "正确答案是: " + question[st.id].answer;
+                if (q.analytic) msg += "\n" + question[st.id].analytic;
                 send(target, msg);
                 delete status[message.group_id];
             }
         }
         //忽略不是回答问题的消息
-        if (!text.match(/[A-Da-d]/)) return;
-        //如果这个群里有待回答的问题
-        var st = status[message.group_id];
-        if (!st) return;
+        if (!text.match(/^[A-Da-d]$/)) return;
         //如果答过了就跳过
         if (element(st.wrong, message.user_id)) return;
         //如果答对了就结束
