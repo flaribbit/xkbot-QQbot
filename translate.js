@@ -27,7 +27,11 @@ function word(send, target, w) {
             if (data.data && data.data.explain) {
                 var d = data.data.explain;
                 try {
-                    send(target, d.word + "\n" + d.phonetic["英"] + d.phonetic["美"] + "\n" + d.translation.join("\n"));
+                    if (d.word) {
+                        send(target, d.word + "\n" + d.phonetic["英"] + d.phonetic["美"] + "\n" + d.translation.join("\n"));
+                    } else {
+                        send(target, data.data.fanyi);
+                    }
                 } catch (error) {
                     send(target, error.toString());
                 }
