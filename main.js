@@ -5,7 +5,9 @@ var zhihu = require("./zhihu");
 var trivia = require("./trivia");
 var translate = require("./translate");
 
-http.createServer(function (req, res) {
+trivia.load();
+
+var server = http.createServer(function (req, res) {
     var chunk = "";
     req
         .on("data", d => chunk += d)
@@ -20,3 +22,9 @@ http.createServer(function (req, res) {
         });
     res.end();
 }).listen(5701);
+
+process.on("SIGINT", () => {
+    trivia.save();
+    server.close();
+    process.exit();
+});

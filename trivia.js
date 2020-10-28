@@ -1,6 +1,7 @@
 var fs = require("fs");
 var bot = require("./bot")
 
+const DATAPATH = "data/trivia_user.json";
 var question = JSON.parse(fs.readFileSync("data/trivia.json"));
 
 //存储各个群的答题情况
@@ -56,6 +57,18 @@ exports.check = function (message) {
             st.wrong.push(message.user_id);
         }
     }
+}
+
+exports.load = function () {
+    if (fs.existsSync(DATAPATH)) {
+        users = JSON.parse(fs.readFileSync(DATAPATH));
+        console.log("[info] Trivia: 已载入用户数据");
+    }
+}
+
+exports.save = function () {
+    fs.writeFileSync(DATAPATH, JSON.stringify(users));
+    console.log("[info] Trivia: 已保存用户数据");
 }
 
 function getTrivia(id) {
