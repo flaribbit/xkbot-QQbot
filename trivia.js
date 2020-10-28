@@ -25,8 +25,8 @@ exports.check = function (message) {
     if (message.message_type == "group") {
         var st = status[message.group_id];
         //管理员功能
-        if (true) {
-            if (text == "测试随机题目") {
+        if (message.sender.role == "owner" || message.sender.role == "admin") {
+            if (text == "随机题目" || text == "下一题") {
                 var id = Math.floor(Math.random() * question.length);
                 send(target, getTrivia(id));
                 status[message.group_id] = {
