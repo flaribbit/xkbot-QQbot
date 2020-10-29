@@ -2,86 +2,62 @@
 // online: 在线人数
 // live_status: 是否在线
 // title: 直播间标题
+var bot = require("./bot");
+var axios = require("axios").default;
 
-const https = require("https");
+var watchList = [];
+var timer = 0;
 
-var WatchList=[{
-    room_id: 0,
-    name: "",
-    status: false,
-    group: [],
-}];
-var Timer=0;
+function checkAll(callback) {
+    watchList.forEach(up => {
+        axios.get("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=" + up.room_id)
+            .then(d => {
+                if (d.data.live_status && !up.status) {
+                    //开播了
+                }
+            });
+    });
+}
 
-function checkAll(callback){
-    for(var i=0;i<WatchList.length;i++){
-        https.get("https://api.live.bilibili.com/room/v1/Room/get_info?room_id="+WatchList[i].room,function (res) {
-            if (res.statusCode == 200) {
-                var data = "";
-                res.on("data", function (chunk) {
-                    data += chunk;
-                });
-                res.on("end", function () {
-                    callback(data);
-                    return true;
-                });
-            }
-        }).on("error", function () {
-            callback(null,"请求错误");
-            return false;
-        }).setTimeout(5000, function () {
-            callback(null,"请求超时");
-            return false;
-        });
+function start() {
+    if (!timer) {
+        watchList.forEach(up => up.status = true);
+        timer = setInterval(checkAll, 120000);
     }
 }
 
-function callback(text,error){
-    if(error){
-        console.log(error);
-    }else{
-        var data=JSON.parse(text);
-        if(data.live_status&&!WatchList[i].status){
-            send();
-            WatchList[i].status=true;
-        }
+function stop() {
+    if (timer) {
+        clearInterval(timer);
+        timer = 0;
     }
 }
 
-function start(){
-    if(!Timer){
-        for(var i=0;i<WatchList.length;i++){
-            WatchList[i].status=true;
-        }
-        Timer=setInterval(checkAll,120000);
-    }
-}
-
-function stop(){
-    if(Timer){
-        clearInterval(Timer);
-    }
-}
-
-function add(group,name,room_id){
+function add(group, name, room_id) {
     //判断是否已经关注该直播间
-    var item=WatchList.find(e=>e.room_id==room_id);
-    if(item){
+    var item = watchList.find(e => e.room_id == room_id);
+    if (item) {
         //如果其他群已经关注了就把此群也加入
-        if(!item.group.find(e=>e==group)){
-            item.group.push(group);
+        if (!item.groups.find(e => e == group)) {
+            item.groups.push(group);
         }
-    }else{
+    } else {
         //否则关注直播间
-        WatchList.push({
+        watchList.push({
             room_id: room_id,
             name: name,
             status: false,
-            group: [group],
+            groups: [group],
         });
     }
 }
 
-exports.check=function(message,send){
-    
+exports.check = function (message, send) {
+    var text = message.message;
+    var send = message.message_type == "group" ? bot.SendGroupMessage : bot.SendPrivateMessage;
+    var sender = message.sender.card || message.sender.nickname;
+    var target = message.group_id || message.user_id;
+    if (text == "直播间列表") {
+        // send(target, "已关注直播间0个");
+    }
 }

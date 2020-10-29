@@ -1,5 +1,6 @@
 var http = require('http');
 var baike = require("./baike");
+var bililive = require("./bililive");
 var dice = require("./dice");
 var zhihu = require("./zhihu");
 var trivia = require("./trivia");
@@ -18,6 +19,7 @@ var server = http.createServer(function (req, res) {
                 dice.check(message);
                 trivia.check(message);
                 translate.check(message);
+                bililive.check(message);
             }
         });
     res.end();
