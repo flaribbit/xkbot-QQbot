@@ -1,5 +1,5 @@
-var http = require("http");
 var bot = require("./bot")
+var axios = require("axios").default;
 
 exports.check = function (message) {
     var text = message.message;
@@ -14,31 +14,15 @@ exports.check = function (message) {
 }
 
 function word(send, target, w) {
-    var req = http.request("http://fanyi.so.com/index/search?eng=1&query=" + w, {
-        method: "POST",
-        headers: {
-            "pro": "fanyi"
-        }
-    }, res => {
-        var chunk = "";
-        res.on("data", d => chunk += d);
-        res.on("end", () => {
-            var data = JSON.parse(chunk);
-            if (data.data && data.data.explain) {
-                var d = data.data.explain;
-                try {
-                    if (d.word) {
-                        send(target, d.word + "\n" + d.phonetic["英"] + d.phonetic["美"] + "\n" + d.translation.join("\n"));
-                    } else {
-                        send(target, data.data.fanyi);
-                    }
-                } catch (error) {
-                    send(target, error.toString());
-                }
+    axios.get("http://fanyi.so.com/index/search?eng=1&query=" + w, { headers: { "pro": "fanyi" } }).then(res => {
+        var data = res.data.data;
+        if (data && data.explain) {
+            if (data.explain.word) {
+                var e = data.explain;
+                send(target, e.word + "\n" + e.phonetic["英"] + e.phonetic["美"] + "\n" + e.translation.join("\n"));
             } else {
-                console.log("failed");
+                send(target, data.fanyi);
             }
-        });
+        }
     });
-    req.end();
 }
