@@ -41,7 +41,7 @@ exports.check = function (message) {
     }
     res = text.match(/^[\.。]jrrp$/);
     if (res) {
-        send(target, `${sender}今天的人品值是: ${((Math.floor(+new Date() / 86400000 + 8 / 24) + message.sender.user_id) * 9301 + 49297) % 233280 % 100}`);
+        send(target, `${sender}今天的人品值是: ${jrrp(message.sender.user_id)}`);
     }
 }
 
@@ -106,6 +106,10 @@ function mahjong() {
         }
     }
     return hand.join("");
+}
+
+function jrrp(user_id) {
+    return Math.floor(Math.abs(Math.sin(Math.floor(+new Date() / 86400000 + 8 / 24) * 1e10 + user_id)) * 1e4) % 100;
 }
 
 function generateindex(list) {
