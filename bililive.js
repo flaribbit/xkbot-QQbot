@@ -2,17 +2,17 @@
 // online: 在线人数
 // live_status: 是否在线
 // title: 直播间标题
+const DATAPATH = "data/bililive.json";
 var bot = require("./bot");
 var axios = require("axios").default;
-
 var watchList = [];
 var timer = 0;
 
-function checkAll(callback) {
+function checkAll() {
     watchList.forEach(up => {
         axios.get("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=" + up.room_id)
-            .then(d => {
-                if (d.data.live_status && !up.status) {
+            .then(res => {
+                if (res.data.live_status && !up.status) {
                     //开播了
                 }
             });
@@ -40,6 +40,7 @@ function add(group, name, room_id) {
         //如果其他群已经关注了就把此群也加入
         if (!item.groups.find(e => e == group)) {
             item.groups.push(group);
+            bot.SendGroupMessage(group, "已关注" + room_id);
         }
     } else {
         //否则关注直播间
@@ -58,6 +59,18 @@ exports.check = function (message, send) {
     var sender = message.sender.card || message.sender.nickname;
     var target = message.group_id || message.user_id;
     if (text == "直播间列表") {
-        // send(target, "已关注直播间0个");
+        send(target, "本群已关注直播间0个\nundefined");
     }
+}
+
+exports.load = function () {
+    if (fs.existsSync(DATAPATH)) {
+        watchList = JSON.parse(fs.readFileSync(DATAPATH));
+        console.log("[info] bililive: 已载入数据");
+    }
+}
+
+exports.save = function () {
+    fs.writeFileSync(DATAPATH, JSON.stringify(watchList));
+    console.log("[info] bililive: 已保存数据");
 }

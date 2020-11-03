@@ -5,6 +5,7 @@ var dice = require("./dice");
 var zhihu = require("./zhihu");
 var trivia = require("./trivia");
 var translate = require("./translate");
+var weibo = require("./weibo");
 
 trivia.load();
 
@@ -20,6 +21,7 @@ var server = http.createServer(function (req, res) {
                 trivia.check(message);
                 translate.check(message);
                 bililive.check(message);
+                weibo.check(message);
             }
         });
     res.end();
