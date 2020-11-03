@@ -1,15 +1,16 @@
-var http = require('http');
-var baike = require("./baike");
-var bililive = require("./bililive");
-var dice = require("./dice");
-var zhihu = require("./zhihu");
-var trivia = require("./trivia");
-var translate = require("./translate");
-var weibo = require("./weibo");
+//全局加载的模块
+var botModule = [
+    "./dice",
+    "./trivia",
+    "./translate",
+    "./bililive",
+    "./weibo"
+].map(m => require(m));
 
-trivia.load();
+botModule.forEach(m => m.load ? m.load() : false);
 
-var server = http.createServer(function (req, res) {
+const http = require('http');
+var server = http.createServer((req, res) => {
     var chunk = "";
     req
         .on("data", d => chunk += d)
@@ -17,18 +18,14 @@ var server = http.createServer(function (req, res) {
             var message = JSON.parse(chunk);
             if (message.message_type) {
                 console.log(chunk);
-                dice.check(message);
-                trivia.check(message);
-                translate.check(message);
-                bililive.check(message);
-                weibo.check(message);
+                botModule.forEach(m => m.check(message));
             }
         });
     res.end();
 }).listen(5701);
 
 process.on("SIGINT", () => {
-    trivia.save();
+    botModule.forEach(m => m.save ? m.save() : false);
     server.close();
     process.exit();
 });
