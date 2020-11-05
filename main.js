@@ -4,7 +4,8 @@ var botModule = [
     "./trivia",
     "./translate",
     "./bililive",
-    "./weibo"
+    "./weibo",
+    "./zhihu",
 ].map(m => require(m));
 
 botModule.forEach(m => m.load ? m.load() : false);
@@ -23,7 +24,6 @@ var server = http.createServer((req, res) => {
         .on("end", () => {
             var message = JSON.parse(chunk);
             if (message.message_type) {
-                console.log(chunk);
                 botModule.forEach(m => m.check(message));
             }
         });

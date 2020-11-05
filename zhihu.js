@@ -1,39 +1,20 @@
-const https = require("https");
-const cheerio = require("cheerio");
+//https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=50
+const bot = require("./bot");
+const { default: Axios } = require("axios");
 
-function getHot(callback){
-    https.get("https://www.zhihu.com/hot", function (res) {
-        if (res.statusCode == 200) {
-            var data = "";
-            res.on("data", function (chunk) {
-                data += chunk;
-            });
-            res.on("end", function () {
-                callback(data);
-                return true;
-            });
-        }
-    }).on("error", function () {
-        callback(null,"请求错误");
-        return false;
-    }).setTimeout(10000, function () {
-        callback(null,"请求超时");
-    });
-}
-
-exports.check=function(message,send){
-    // console.log(message);
-    if(message.message=="知乎热榜"){
-        getHot(function(data,error){
-            console.log(data);
-            if(error){
-                console.log(error);
-                send(message.group_id,error);
-            }else{
-                var $ = cheerio.load(data);
-                var content = $(".HotItem-title");
-                console.log(content);
+exports.check = function (message) {
+    var text = message.message;
+    var send = message.message_type == "group" ? bot.SendGroupMessage : bot.SendPrivateMessage;
+    var sender = message.sender.card || message.sender.nickname;
+    var target = message.group_id || message.user_id;
+    if (text == ".zhihu") {
+        Axios.get("https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=10").then(res => {
+            var items = res.data.data;
+            var s = ["知乎热榜"];
+            for (var i = 0; i < 10; i++) {
+                s.push(String(i + 1) + ". " + items[i].target.title);
             }
+            send(target, s.join("\n"));
         });
     }
 }
