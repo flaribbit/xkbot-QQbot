@@ -45,6 +45,12 @@ exports.check = function (message) {
     }
 }
 
+exports.help = [
+    ".r\t掷一个6面骰",
+    ".r d20\t掷一个20面骰",
+    ".draw 地主/农民/麻将\t抽牌",
+].join("\n");
+
 function doudizhu(num) {
     var cards = [
         "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K",
