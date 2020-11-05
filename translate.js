@@ -8,12 +8,12 @@ exports.check = function (message) {
     var sender = message.sender.card || message.sender.nickname;
     var target = message.group_id || message.user_id;
     var res;
-    res = text.match(/\.en ?(.+)/);
+    res = text.match(/^\.en ?(.+)$/);
     if (res) {
         wordEN(send, target, res[1]);
         return;
     }
-    res = text.match(/\.jp ?(.+)/);
+    res = text.match(/^\.jp ?(.+)$/);
     if (res) {
         wordJP(send, target, res[1]);
         return;
