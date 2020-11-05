@@ -9,7 +9,13 @@ var botModule = [
 
 botModule.forEach(m => m.load ? m.load() : false);
 
-const http = require('http');
+const fs = require("fs");
+const http = require("http");
+const CONFIG_PATH = "data/config.json";
+//检查目录
+if (!fs.existsSync("data")) fs.mkdirSync("data");
+//载入设置
+var config = fs.existsSync(CONFIG_PATH) ? JSON.parse(fs.readFileSync(CONFIG_PATH)) : {};
 var server = http.createServer((req, res) => {
     var chunk = "";
     req
@@ -24,8 +30,11 @@ var server = http.createServer((req, res) => {
     res.end();
 }).listen(5701);
 
+//保存数据后退出
 process.on("SIGINT", () => {
     botModule.forEach(m => m.save ? m.save() : false);
+    fs.writeFileSync(CONFIG_PATH, JSON.stringify(config));
+    console.log("[info] bot: 已保存设置");
     server.close();
     process.exit();
 });
