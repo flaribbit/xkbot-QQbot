@@ -42,6 +42,11 @@ exports.check = function (message) {
     res = text.match(/^[\.。]jrrp$/);
     if (res) {
         send(target, `${sender}今天的人品值是: ${jrrp(message.sender.user_id)}`);
+        return true;
+    }
+    if (text == ".pcr") {
+        send(target, pcr());
+        return true;
     }
 }
 
@@ -124,4 +129,40 @@ function generateindex(list) {
         index[list[i]] = i;
     }
     console.log(JSON.stringify(index));
+}
+
+//https://wiki.biligame.com/pcr/%E8%A7%92%E8%89%B2%E5%9B%BE%E9%89%B4
+//https://www.bilibili.com/read/cv5659334/
+//$($0).find('font').map((i,e)=>$(e).text()).toArray()
+//3["镜华", "真步", "凯露（夏日）", "铃莓（夏日）", "初音", "伊绪", "璃乃", "亚里莎", "杏奈", "忍（万圣节）", "环奈", "咲恋", "伊莉亚", "妮侬", "莫妮卡", "静流", "姬塔", "佩可莉姆（夏日）", "珠希（夏日）", "智", "秋乃", "真琴", "望", "纯"]
+//2["雪", "千歌", "美里", "栞", "铃奈", "茜里", "深月", "铃", "美冬", "真阳", "忍", "美美", "惠理子", "珠希", "绫音", "纺希", "茉莉", "香织", "空花", "宫子"]
+//1["优衣", "碧", "美咲", "凯露", "铃莓", "宫子（万圣节）", "依里", "可可萝（夏日）", "可可萝", "美冬（夏日）", "由加莉", "怜", "胡桃", "未奏希", "日和莉", "佩可莉姆", "莉玛"]
+function pcr() {
+    const characters = [
+        ["优衣", "碧", "美咲", "凯露", "铃莓", "依里", "可可萝", "由加莉", "怜", "胡桃", "未奏希", "日和莉", "佩可莉姆", "莉玛"],
+        ["雪", "千歌", "美里", "栞", "铃奈", "茜里", "深月", "铃", "美冬", "真阳", "忍", "美美", "惠理子", "珠希", "绫音", "纺希", "茉莉", "香织", "空花", "宫子"],
+        ["镜华", "真步", "初音", "伊绪", "璃乃", "亚里莎", "杏奈", "环奈", "咲恋", "伊莉亚", "妮侬", "莫妮卡", "静流", "姬塔", "智", "秋乃", "真琴", "望", "纯"],
+    ];
+    var result = [];
+    for (var i = 0; i < 9; i++) {
+        var rand = Math.random();
+        if (rand < 0.025) {
+            result.push(randomChoice(characters[2]) + " ★★★");
+        } else if (rand < 0.205) {
+            result.push(randomChoice(characters[1]) + " ★★");
+        } else {
+            result.push(randomChoice(characters[0]) + " ★");
+        }
+    }
+    rand = Math.random();
+    if (rand < 0.025) {
+        result.push(randomChoice(characters[2]) + " ★★★");
+    } else {
+        result.push(randomChoice(characters[1]) + " ★★");
+    }
+    return result.join("\n");
+}
+
+function randomChoice(array) {
+    return array[Math.floor(Math.random() * array.length)];
 }
