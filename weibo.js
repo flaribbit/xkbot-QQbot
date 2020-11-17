@@ -36,7 +36,7 @@ function sendLatestById(id, send, target) {
     Axios.get("https://m.weibo.cn/api/container/getIndex?containerid=107603" + id).then(res => {
         var cards = res.data.data.cards;
         for (var i = 0; i < cards.length; i++) {
-            if (cards[i].card_type == 9) {
+            if (cards[i].card_type == 9 && cards[i].mblog.mblogtype == 0) {
                 send(target, toPlainText(cards[i].mblog.text) + "\n" + cards[i].scheme.split("?")[0]);
                 return;
             }
@@ -48,6 +48,8 @@ function toPlainText(html) {
     return html
         .replace(/<span class="url-icon"><img alt=([^ ]+).*?\/span>/g, "$1")
         .replace(/<a .*?>(.*?)<\/a>/g, "$1")
+        .replace(/<br \/>/g, "\n")
+        .replace(/<img .*?>/g, "")
         .replace(/<span .*?>(.*?)<\/span>/g, "$1");
 }
 
