@@ -37,14 +37,18 @@ function sendLatestById(id, send, target) {
         var cards = res.data.data.cards;
         for (var i = 0; i < cards.length; i++) {
             if (cards[i].card_type == 9) {
-                var text = cards[i].mblog.text.replace(/<span class="url-icon"><img alt=([^ ]+).*?\/span>/g, "$1");
-                text = text.replace(/<a .*?>(.*?)<\/a>/g, "$1");
-                text = text.replace(/<span .*?>(.*?)<\/span>/g, "$1");
-                send(target, text + "\n" + cards[i].scheme.split("?")[0]);
+                send(target, toPlainText(cards[i].mblog.text) + "\n" + cards[i].scheme.split("?")[0]);
                 return;
             }
         }
     });
+}
+
+function toPlainText(html) {
+    return html
+        .replace(/<span class="url-icon"><img alt=([^ ]+).*?\/span>/g, "$1")
+        .replace(/<a .*?>(.*?)<\/a>/g, "$1")
+        .replace(/<span .*?>(.*?)<\/span>/g, "$1");
 }
 
 exports.load = function () {
