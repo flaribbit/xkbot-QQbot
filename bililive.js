@@ -13,7 +13,8 @@ function checkAll(send) {
     console.log("[info] bililive: 检查直播状态");
     watchList.forEach(up => {
         axios.get("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=" + up.room_id).then(res => {
-            if (res.data.live_status && !up.status) {
+            if (res.data.data.live_status == 1) {
+                if (up.status) return;
                 //开播了
                 up.status = true;
                 if (send) {
@@ -68,7 +69,7 @@ exports.check = function (message) {
     if (!res) return;
     if (res[1] == "list") {
         var result = [];
-        watchList.forEach(up => up.groups.find(e => e == target) ? result.push(up.name) : 0);
+        watchList.forEach(up => up.groups.find(e => e == target) ? result.push(up.name + (up.status ? " (直播中)" : "")) : 0);
         send(target, "本群已关注直播间" + result.length + "个：\n" + result.join("\n"));
     } else if (res[1] == "add" && res[2]) {
         axios.get("https://api.bilibili.com/x/web-interface/search/type?search_type=live_user&keyword=" + encodeURIComponent(res[2])).then(res => {
@@ -101,8 +102,10 @@ exports.check = function (message) {
         }
     } else if (res[1] == "start") {
         start();
+        send(target, "直播间监控已开启");
     } else if (res[1] == "stop") {
         stop();
+        send(target, "直播间监控已关闭");
     }
 }
 
