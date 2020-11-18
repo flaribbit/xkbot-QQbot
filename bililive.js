@@ -54,13 +54,46 @@ function add(group, name, room_id) {
     }
 }
 
-exports.check = function (message, send) {
+exports.check = function (message) {
     var text = message.message;
     var send = message.message_type == "group" ? bot.SendGroupMessage : bot.SendPrivateMessage;
     var sender = message.sender.card || message.sender.nickname;
     var target = message.group_id || message.user_id;
-    if (text == "直播间列表") {
-        send(target, "本群已关注直播间0个\nundefined");
+    var res = text.match(/^\.bililive (\S+) ?(\S+)?$/);
+    if (!res) return;
+    if (res[1] == "list") {
+        var result = [];
+        watchList.forEach(up => up.groups.find(e => e == target) ? result.push(up.name) : 0);
+        send(target, "本群已关注直播间" + result.length + "个：\n" + result.join("\n"));
+    } else if (res[1] == "add" && res[2]) {
+        axios.get("https://api.bilibili.com/x/web-interface/search/type?search_type=live_user&keyword=" + encodeURIComponent(res[2])).then(res => {
+            if (res.data.code != 0) {
+                send(target, "接口返回错误");
+                return;
+            }
+            var live_user = res.data.data.result;
+            if (live_user) {
+                var name = live_user[0].uname.replace(/<em class="keyword">(.+?)<\/em>/, "$1");
+                var roomid = live_user[0].roomid;
+                add(target, name, roomid);
+                send(target, `已关注${name}(直播间${roomid})`);
+            } else {
+                send(target, "找不到" + res[2]);
+            }
+        });
+    } else if (res[1] == "del" && res[2]) {
+        //查找up
+        var up = watchList.find(up => up.name == res[2]);
+        if (up) {
+            //找到了就取消关注
+            var index = up.groups.findIndex(g => g == target);
+            if (index > -1) {
+                up.groups.splice(index, 1);
+            }
+            send(target, "已取消关注" + up.name);
+        } else {
+            send(target, "找不到或没有关注" + up.name);
+        }
     }
 }
 
