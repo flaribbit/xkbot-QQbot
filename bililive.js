@@ -9,21 +9,27 @@ var axios = require("axios").default;
 var watchList = [];
 var timer = 0;
 
-function checkAll() {
+function checkAll(send) {
+    console.log("[info] bililive: 检查直播状态");
     watchList.forEach(up => {
-        axios.get("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=" + up.room_id)
-            .then(res => {
-                if (res.data.live_status && !up.status) {
-                    //开播了
+        axios.get("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=" + up.room_id).then(res => {
+            if (res.data.live_status && !up.status) {
+                //开播了
+                up.status = true;
+                if (send) {
+                    up.groups.forEach(group => send(group, up.name + "开播了！\nhttps://live.bilibili.com/" + up.room_id));
                 }
-            });
+            } else {
+                up.status = false;
+            }
+        });
     });
 }
 
 function start() {
     if (!timer) {
-        watchList.forEach(up => up.status = true);
-        timer = setInterval(checkAll, 120000);
+        checkAll();
+        timer = setInterval(checkAll, 120000, bot.SendGroupMessage);
     }
 }
 
@@ -41,7 +47,6 @@ function add(group, name, room_id) {
         //如果其他群已经关注了就把此群也加入
         if (!item.groups.find(e => e == group)) {
             item.groups.push(group);
-            bot.SendGroupMessage(group, "已关注" + room_id);
         }
     } else {
         //否则关注直播间
@@ -94,6 +99,10 @@ exports.check = function (message) {
         } else {
             send(target, "找不到或没有关注" + up.name);
         }
+    } else if (res[1] == "start") {
+        start();
+    } else if (res[1] == "stop") {
+        stop();
     }
 }
 
