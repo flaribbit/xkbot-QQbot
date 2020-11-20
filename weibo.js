@@ -1,4 +1,4 @@
-var fs = require("fs");
+const fs = require("fs");
 const bot = require("./bot");
 const { default: Axios } = require("axios");
 const DATAPATH = "data/weibo.json";
@@ -10,7 +10,7 @@ exports.check = function (message) {
     var send = message.message_type == "group" ? bot.SendGroupMessage : bot.SendPrivateMessage;
     var sender = message.sender.card || message.sender.nickname;
     var target = message.group_id || message.user_id;
-    var res = text.match(/^.weibo add ([^ ]+) (\d+)$/);
+    var res = text.match(/^\.weibo add (\S+) (\d+)$/);
     if (res) {
         if (nameList[res[1]]) {
             send(target, `${res[1]}已在列表中`);
@@ -20,7 +20,7 @@ exports.check = function (message) {
         }
         return true;
     }
-    res = text.match(/^.weibo ?(.+)$/);
+    res = text.match(/^\.weibo ?(.+)$/);
     if (res) {
         // sendLatestById(res[1], send, target);
         if (nameList[res[1]]) {
