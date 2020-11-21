@@ -11,7 +11,7 @@ exports.SendGroupMessage = function (group_id, message) {
         "message": message
     }));
     req.end();
-    console.log("[info] >>> ", message);
+    console.log("[info] >>>", message);
 }
 exports.SendPrivateMessage = function (user_id, message) {
     var req = http.request("http://localhost:5700/send_private_msg", {
@@ -25,5 +25,5 @@ exports.SendPrivateMessage = function (user_id, message) {
         "message": message
     }));
     req.end();
-    console.log("[info] >>> ", message);
+    console.log("[info] >>>", message);
 }
