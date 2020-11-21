@@ -6,6 +6,7 @@ var botModule = [
     "./bililive",
     "./weibo",
     "./zhihu",
+    "./reply",
 ].map(m => require(m));
 
 botModule.forEach(m => m.load ? m.load() : false);
