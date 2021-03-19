@@ -1,7 +1,7 @@
 //全局加载的模块
 var botModule = [
     "./dice",
-    "./trivia",
+    // "./trivia",
     "./translate",
     "./bililive",
     "./weibo",
@@ -12,31 +12,31 @@ var botModule = [
 
 botModule.forEach(m => m.load ? m.load() : false);
 
+const WebSocket = require('ws');
 const fs = require("fs");
-const http = require("http");
+const bot = require("./bot");
 const CONFIG_PATH = "data/config.json";
 //检查目录
 if (!fs.existsSync("data")) fs.mkdirSync("data");
 //载入设置
 var config = fs.existsSync(CONFIG_PATH) ? JSON.parse(fs.readFileSync(CONFIG_PATH)) : {};
-var server = http.createServer((req, res) => {
-    var chunk = "";
-    req
-        .on("data", d => chunk += d)
-        .on("end", () => {
-            var message = JSON.parse(chunk);
-            if (message.message_type) {
-                botModule.forEach(m => m.check(message));
-            }
-        });
-    res.end();
-}).listen(5701);
+var wss = new WebSocket.Server({ port: 5700 });
+wss.on('connection', function connection(ws) {
+    console.log("[info] bot: 已连接");
+    ws.on('message', msg => {
+        var message = JSON.parse(msg);
+        if (message.message_type) {
+            bot.SetClient(ws);
+            botModule.forEach(m => m.check(message));
+        }
+    });
+});
 
 //保存数据后退出
 process.on("SIGINT", () => {
     botModule.forEach(m => m.save ? m.save() : false);
     fs.writeFileSync(CONFIG_PATH, JSON.stringify(config));
     console.log("[info] bot: 已保存设置");
-    server.close();
+    wss.close();
     process.exit();
 });
