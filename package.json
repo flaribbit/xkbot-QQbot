@@ -11,6 +11,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.3",
+    "dayjs": "^1.10.4",
     "ws": "^7.4.4"
   }
 }

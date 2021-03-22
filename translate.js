@@ -37,7 +37,7 @@ function wordEN(send, target, w) {
 }
 
 function wordJP(send, target, w) {
-    Axios.get("https://dict.hjenglish.com/jp/jc/" + encodeURIComponent(w), {
+    Axios.get("http://dict.hjenglish.com/jp/jc/" + encodeURIComponent(w), {
         headers: { cookie: "HJ_UID=40e16cb0-69f2-8b35-d09b-4a8627f5cf3b; HJ_SID=s063zt-a49b-40d0-b3dc-e3625b640f9f" }
     }).then(res => {
         var $ = cheerio.load(res.data);
