@@ -11,12 +11,18 @@ exports.check = function (message) {
             headers: {
                 "referer": "https://space.bilibili.com/524927654/article",
             }
-        }).then(res => {
-            if (res.data.data && res.data.data.articles) {
-                var article = res.data.data.articles[0];
-                send(target, article.summary + "\nhttps://www.bilibili.com/read/cv" + article.id +
-                    "\n来源: b站@" + article.author.name + ", 时间: " + dayjs(article.publish_time * 1000).format("YYYY-MM-DD HH:mm:ss"));
+        }).then(({ data: {
+            data: {
+                articles: [{
+                    summary: summary,
+                    publish_time: publish_time,
+                    id: id,
+                    author: { name: name }
+                }]
             }
+        } }) => {
+            send(target, summary + "\nhttps://www.bilibili.com/read/cv" + id +
+                "\n来源: b站@" + name + ", 时间: " + dayjs(publish_time * 1000).format("YYYY-MM-DD HH:mm:ss"));
         });
     }
 }
