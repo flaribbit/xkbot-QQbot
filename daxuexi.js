@@ -22,7 +22,7 @@ exports.check = function (message) {
             }
         } }) => {
             send(target, summary + "\nhttps://www.bilibili.com/read/cv" + id +
-                "\n来源: b站@" + name + ", 时间: " + dayjs(publish_time * 1000).format("YYYY-MM-DD HH:mm:ss"));
+                "\n来源: b站@" + name + ", 时间: " + dayjs(publish_time * 1000).format("YYYY/MM/DD HH:mm:ss"));
         });
     }
 }

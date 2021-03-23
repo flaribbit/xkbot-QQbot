@@ -25,7 +25,7 @@ exports.check = function (message) {
     if (message.message_type == "group") {
         var st = status[message.group_id];
         //管理员功能
-        if (message.sender.role == "owner" || message.sender.role == "admin") {
+        if (message.sender.role == "owner" || message.sender.role == "admin" || bot.IsAdmin(message.user_id)) {
             if (text == "来道题" || text == "下一题") {
                 var id = Math.floor(Math.random() * question.length);
                 send(target, getTrivia(id));
@@ -56,7 +56,7 @@ exports.check = function (message) {
         //忽略不是回答问题的消息
         if (!text.match(/^[A-Da-d]$/)) return;
         //用户不存在积分数据就创建
-        if (!users[message.user_id]) {
+        if (!(message.user_id in users)) {
             users[message.user_id] = 0;
             console.log(`[info] 已创建${sender}(${message.user_id})`);
         };

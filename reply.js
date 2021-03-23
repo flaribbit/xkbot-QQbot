@@ -24,7 +24,7 @@ exports.check = function (message) {
     } else if (message.message_type == "private") {
         //私聊
         //管理员命令
-        if (message.user_id == 1149761294) {//这里以后再改
+        if (bot.IsAdmin(message.user_id)) {
             var res = text.match(/^\.reply (\S+) ?(\S+)?$/);
             if (res) {
                 if (res[1] == "list" && res[2]) {
