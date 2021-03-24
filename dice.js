@@ -1,10 +1,13 @@
 var bot = require("./bot")
 
 exports.check = function (message) {
+    if (message.message_type == "group") {
+        var send = bot.SendGroupMessage, target = message.group_id;
+    } else {
+        var send = bot.SendPrivateMessage, target = message.user_id;
+    }
     var text = message.message;
-    var send = message.message_type == "group" ? bot.SendGroupMessage : bot.SendPrivateMessage;
     var sender = message.sender.card || message.sender.nickname;
-    var target = message.group_id || message.user_id;
     var res;
     res = text.match(/^[\.。]r ?d?(\d+)?$/);
     if (res) {

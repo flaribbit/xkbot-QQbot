@@ -3,9 +3,12 @@ const { default: Axios } = require("axios");
 const dayjs = require("dayjs")
 
 exports.check = function (message) {
+    if (message.message_type == "group") {
+        var send = bot.SendGroupMessage, target = message.group_id;
+    } else {
+        var send = bot.SendPrivateMessage, target = message.user_id;
+    }
     var text = message.message;
-    var send = message.message_type == "group" ? bot.SendGroupMessage : bot.SendPrivateMessage;
-    var target = message.group_id || message.user_id;
     if (text == ".大学习" || text == "。大学习") {
         Axios.get("https://api.bilibili.com/x/space/article?mid=524927654&pn=1&ps=12&sort=publish_time&jsonp=json", {
             headers: {
