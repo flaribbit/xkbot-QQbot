@@ -27,8 +27,8 @@ exports.SetClient = function (ws) {
     client = ws;
 }
 
-exports.ImageUrl = function (url) {
-    return "[CQ:image,file=" + url + "]";
+exports.Image = function (path) {
+    return "[CQ:image,file=" + path + "]";
 }
 
 exports.SendGroupMessage = function (group_id, message) {

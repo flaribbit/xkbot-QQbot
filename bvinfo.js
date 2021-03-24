@@ -33,7 +33,7 @@ exports.check = function (message) {
                 }
             }
         } }) => {
-            send(target, `${bot.ImageUrl(pic)}
+            send(target, `${bot.Image(pic)}
 @${upname} b23.tv/av${avid}
 ${dayjs(pubdate * 1000).format("YYYY/MM/DD HH:mm:ss")}
 ${title}
