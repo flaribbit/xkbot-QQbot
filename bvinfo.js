@@ -33,13 +33,20 @@ exports.check = function (message) {
                 }
             }
         } }) => {
-            send(target, bot.ImageUrl(pic) +
-                "\nb23.tv/av" + avid +
-                "\n" + title +
-                "\n" + desc +
-                "\n@" + upname + " " + dayjs(pubdate * 1000).format("YYYY/MM/DD HH:mm:ss") +
-                "\n播放: " + view + ", 硬币: " + coin);
+            send(target, `${bot.ImageUrl(pic)}
+@${upname} b23.tv/av${avid}
+${dayjs(pubdate * 1000).format("YYYY/MM/DD HH:mm:ss")}
+${title}
+${Str(view)}播放 ${Str(coin)}硬币`);
             return true;
         });
+    }
+}
+
+function Str(n) {
+    if (n > 1e5) {
+        return (n / 10000).toFixed(1) + "w";
+    } else {
+        return String(n);
     }
 }
