@@ -13,12 +13,12 @@ exports.check = function (message) {
     res = text.match(/^\.en ?(.+)$/);
     if (res) {
         wordEN(send, target, res[1]);
-        return;
+        return true;
     }
     res = text.match(/^\.jp ?(.+)$/);
     if (res) {
         wordJP(send, target, res[1]);
-        return;
+        return true;
     }
 }
 
@@ -42,12 +42,13 @@ function wordJP(send, target, w) {
     Axios.get("http://dict.hjenglish.com/jp/jc/" + encodeURIComponent(w), {
         headers: { cookie: "HJ_UID=40e16cb0-69f2-8b35-d09b-4a8627f5cf3b; HJ_SID=s063zt-a49b-40d0-b3dc-e3625b640f9f" }
     }).then(res => {
-        var $ = cheerio.load(res.data);
-        var pane = $(".word-details-pane-header");
         var s = [];
-        s.push(pane.find(".pronounces>span:nth-child(1)").text())
-        s.push(pane.find(".word-text>h2").text());
-        pane.find(".simple h2,li").each((_, e) => s.push($(e).text()));
+        var $ = cheerio.load(res.data);
+        $(".word-details-pane-header").each((_, e) => {
+            var pane = $(e);
+            s.push(pane.find(".word-text>h2").text() + " " + pane.find(".pronounces>span:nth-child(1)").text());
+            pane.find(".simple h2,li").each((_, l) => s.push($(l).text()));
+        });
         send(target, s.join("\n"));
     }).catch(e => {
         send(target, e.message);
