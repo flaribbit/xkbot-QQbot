@@ -1,6 +1,6 @@
 //https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=50
 const bot = require("./bot");
-const { default: Axios } = require("axios");
+const { default: axios } = require("axios");
 
 exports.check = function (message) {
     if (message.message_type == "group") {
@@ -10,13 +10,13 @@ exports.check = function (message) {
     }
     var text = message.message;
     if (text == ".zhihu") {
-        Axios.get("https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=10").then(res => {
+        axios.get("https://www.zhihu.com/api/v3/feed/topstory/hot-lists/total?limit=10").then(res => {
             var items = res.data.data;
-            var s = ["知乎热榜"];
-            for (var i = 0; i < 10; i++) {
-                s.push(String(i + 1) + ". " + items[i].target.title);
-            }
-            send(target, s.join("\n"));
+            var s = "知乎热榜";
+            for (var i = 0; i < 10; i++)
+                s += "\n" + String(i + 1) + ". " + items[i].target.title +
+                    "\nzhihu.com/question/" + items[i].target.id;
+            send(target, s);
         });
     }
 }
