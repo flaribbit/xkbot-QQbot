@@ -1,5 +1,6 @@
 //全局加载的模块
 var botModule = [
+    "./baike",
     "./dice",
     "./trivia",
     "./translate",
