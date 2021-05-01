@@ -48,8 +48,8 @@ function getInfo(bv) {
         }
     } }) => `${bot.Image(pic)}
 @${upname} b23.tv/av${avid}
-${dayjs(pubdate * 1000).format("YYYY/MM/DD HH:mm:ss")}
 ${title}
+${dayjs(pubdate * 1000).format("YYYY/MM/DD HH:mm:ss")}
 ${str(view)}播放 ${str(coin)}硬币`);
 }
 
