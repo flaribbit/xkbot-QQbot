@@ -26,26 +26,23 @@ exports.check = function (message) {
     var sender = message.sender.card || message.sender.nickname;
     if (message.message_type == "group") {
         var st = status[message.group_id];
-        //管理员功能
-        if (message.sender.role == "owner" || message.sender.role == "admin" || bot.IsAdmin(message.user_id)) {
-            if (text == "来道题" || text == "下一题") {
-                var id = Math.floor(Math.random() * question.length);
-                send(target, getTrivia(id));
-                status[message.group_id] = {
-                    id: id,
-                    pass: [],
-                    score: 10
-                };
-                return;
-            } else if (text == "公布答案") {
-                var msg = "正确答案是: " + question[st.id].answer;
-                if (question[st.id].analytic) msg += "\n" + question[st.id].analytic;
-                send(target, msg);
-                delete status[message.group_id];
-                return;
-            }
+        if (text == "来道题" || text == "下一题") {
+            var id = Math.floor(Math.random() * question.length);
+            send(target, getTrivia(id));
+            status[message.group_id] = {
+                id: id,
+                pass: [],
+                score: 10
+            };
+            return;
+        } else if (text == "公布答案") {
+            var msg = "正确答案是: " + question[st.id].answer;
+            if (question[st.id].analytic) msg += "\n" + question[st.id].analytic;
+            send(target, msg);
+            delete status[message.group_id];
+            return;
         }
-        if (text == "查询积分") {
+        if (text == "查询积分" || text == "积分查询") {
             if (users[message.user_id]) {
                 send(target, `${sender}积分：${users[message.user_id]}`);
             } else {
