@@ -32,23 +32,27 @@ exports.Image = function (path) {
 }
 
 exports.SendGroupMessage = function (group_id, message) {
-    client.send(JSON.stringify({
-        "action": "send_group_msg",
-        "params": {
-            "group_id": group_id,
-            "message": message
-        }
-    }));
-    console.log("[info] >>>", message);
+    setTimeout(() => {
+        client.send(JSON.stringify({
+            "action": "send_group_msg",
+            "params": {
+                "group_id": group_id,
+                "message": message
+            }
+        }));
+        console.log("[info] >>>", message);
+    }, Math.random() * 4000 + 1000);
 }
 
 exports.SendPrivateMessage = function (user_id, message) {
-    client.send(JSON.stringify({
-        "action": "send_private_msg",
-        "params": {
-            "user_id": user_id,
-            "message": message
-        }
-    }));
-    console.log("[info] >>>", message);
+    setTimeout(() => {
+        client.send(JSON.stringify({
+            "action": "send_private_msg",
+            "params": {
+                "user_id": user_id,
+                "message": message
+            }
+        }));
+        console.log("[info] >>>", message);
+    }, Math.random() * 4000 + 1000);
 }
