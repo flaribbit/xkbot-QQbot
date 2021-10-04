@@ -10,6 +10,7 @@ var botModule = [
     "./reply",
     "./daxuexi",
     "./bvinfo",
+    "./setu",
 ].map(m => require(m));
 
 botModule.forEach(m => m.load ? m.load() : false);
