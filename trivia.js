@@ -1,5 +1,5 @@
-var fs = require("fs");
-var bot = require("./bot")
+const fs = require("fs");
+const bot = require("./bot")
 
 const DATAPATH = "data/trivia_user.json";
 var question = JSON.parse(fs.readFileSync("data/trivia.json"));

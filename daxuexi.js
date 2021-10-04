@@ -1,5 +1,5 @@
 const bot = require("./bot");
-const { default: Axios } = require("axios");
+const { default: axios } = require("axios");
 const dayjs = require("dayjs")
 
 exports.check = function (message) {
@@ -10,7 +10,7 @@ exports.check = function (message) {
     }
     var text = message.message;
     if (text == ".大学习" || text == "。大学习") {
-        Axios.get("https://api.bilibili.com/x/space/article?mid=524927654&pn=1&ps=12&sort=publish_time&jsonp=json", {
+        axios.get("https://api.bilibili.com/x/space/article?mid=524927654&pn=1&ps=12&sort=publish_time&jsonp=json", {
             headers: {
                 "referer": "https://space.bilibili.com/524927654/article",
             }

@@ -16,7 +16,7 @@ process.stdin.on("data", buffer => {
     var message = buildMessage(String(buffer).trimEnd())
     botModule.forEach(m => m.check(message));
 });
-var server = http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
     req.on("end", () => console.log("已发送"));
     res.end();
 }).listen(5700);

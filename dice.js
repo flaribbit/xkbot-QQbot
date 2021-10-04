@@ -1,4 +1,4 @@
-var bot = require("./bot")
+const bot = require("./bot")
 
 exports.check = function (message) {
     if (message.message_type == "group") {

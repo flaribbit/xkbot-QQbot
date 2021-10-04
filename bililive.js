@@ -3,9 +3,9 @@
 // live_status: 是否在线
 // title: 直播间标题
 const DATAPATH = "data/bililive.json";
-var fs = require("fs");
-var bot = require("./bot");
-var axios = require("axios").default;
+const fs = require("fs");
+const bot = require("./bot");
+const axios = require("axios").default;
 var watchList = [];
 var timer = 0;
 

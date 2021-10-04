@@ -18,7 +18,7 @@ botModule.forEach(m => m.load ? m.load() : false);
 const WebSocket = require('ws');
 const bot = require("./bot");
 bot.LoadConfig();
-var wss = new WebSocket.Server({ port: 5700 });
+const wss = new WebSocket.Server({ port: 5700 });
 wss.on('connection', function connection(ws) {
     bot.SetClient(ws);
     console.log("[info] bot: 已连接");

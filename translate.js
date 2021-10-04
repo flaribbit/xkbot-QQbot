@@ -1,6 +1,6 @@
-var bot = require("./bot")
-var Axios = require("axios").default;
-var cheerio = require("cheerio");
+const bot = require("./bot")
+const axios = require("axios").default;
+const cheerio = require("cheerio");
 
 exports.check = function (message) {
     if (message.message_type == "group") {
@@ -23,7 +23,7 @@ exports.check = function (message) {
 }
 
 function wordEN(send, target, w) {
-    Axios.get("http://fanyi.so.com/index/search?eng=1&query=" + w, { headers: { "pro": "fanyi" } }).then(res => {
+    axios.get("http://fanyi.so.com/index/search?eng=1&query=" + w, { headers: { "pro": "fanyi" } }).then(res => {
         var data = res.data.data;
         if (data && data.explain) {
             if (data.explain.word) {
@@ -39,7 +39,7 @@ function wordEN(send, target, w) {
 }
 
 function wordJP(send, target, w) {
-    Axios.get("http://dict.hjenglish.com/jp/jc/" + encodeURIComponent(w), {
+    axios.get("http://dict.hjenglish.com/jp/jc/" + encodeURIComponent(w), {
         headers: { cookie: "HJ_UID=40e16cb0-69f2-8b35-d09b-4a8627f5cf3b; HJ_SID=s063zt-a49b-40d0-b3dc-e3625b640f9f" }
     }).then(res => {
         var s = [];

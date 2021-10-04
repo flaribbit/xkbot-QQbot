@@ -1,6 +1,6 @@
 const fs = require("fs");
 const bot = require("./bot");
-const { default: Axios } = require("axios");
+const { default: axios } = require("axios");
 const DATAPATH = "data/weibo.json";
 
 var nameList = {};
@@ -35,7 +35,7 @@ exports.check = function (message) {
 }
 
 function sendLatestById(id, send, target) {
-    Axios.get("https://m.weibo.cn/api/container/getIndex?containerid=107603" + id).then(res => {
+    axios.get("https://m.weibo.cn/api/container/getIndex?containerid=107603" + id).then(res => {
         var cards = res.data.data.cards;
         for (var i = 0; i < cards.length; i++) {
             if (cards[i].card_type == 9 && cards[i].mblog.mblogtype == 0) {
