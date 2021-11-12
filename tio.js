@@ -15,10 +15,10 @@ exports.check = function (message) {
     } else {
         var send = bot.SendPrivateMessage, target = message.user_id;
     }
-    var text = message.message.replace("&#91;", "[").replace("&#93;", "]");
+    var text = message.message.replace(/&#91;/g, "[").replace(/&#93;/g, "]");
     var sender = message.sender.card || message.sender.nickname;
     if (message.message_type == "group") {
-        var res = text.match(/#([a-z0-9\-]+)\r?\n([\s\S]+)/);
+        var res = text.match(/^#([a-z0-9\-]+)\r?\n([\s\S]+)/);
         if (res) {
             console.log("运行代码", res[2]);
             axios.post(API_URL, getRequestBody(res[2], res[1]), {
