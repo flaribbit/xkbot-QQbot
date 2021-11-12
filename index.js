@@ -11,6 +11,7 @@ var botModule = [
     "./daxuexi",
     "./bvinfo",
     "./setu",
+    "./tio",
 ].map(m => require(m));
 
 botModule.forEach(m => m.load ? m.load() : false);
