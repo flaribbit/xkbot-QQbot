@@ -22,24 +22,29 @@ const wss = new WebSocket.Server({ port: PORT }, () => {
     bot.info("WebSocket Server started on port " + PORT);
 });
 wss.on('connection', function connection(ws) {
-    bot.setClient(ws);
-    bot.info("bot: 已连接");
+    bot.info("cqhttp已连接");
     ws.on('message', msg => {
-        var message = JSON.parse(msg);
-        if (message.message_type) {
-            if (message.message_type == "group" && !bot.isEnabled(message.group_id)) {
-                return;
-            }
-            botModule.forEach(m => m.check(message));
+        const message = JSON.parse(msg);
+        // additional message infomation
+        const info = {
+            name: message.sender.card || message.sender.nickname,
+            isAdmin: message.sender.role == 'admin' || bot.isAdmin(message.sender.user_id),
+        };
+        // handle group message
+        if (message.message_type == 'group') {
+            if (!bot.isEnabled(message.group_id)) return;
+            bot.handle(message, info, (msg) => bot.sendGroupMessage(message.group_id, msg));
+        } else if (message.message_type == 'private') {
+            // handle private message
+            bot.handle(message, info, (msg) => bot.sendPrivateMessage(message.user_id, msg));
         }
     });
 });
 
 //保存数据后退出
 process.on("SIGINT", () => {
-    botModule.forEach(m => m.save ? m.save() : false);
-    bot.info("bot: 已退出");
     bot.saveConfig();
+    bot.info("Websocket Server closed")
     wss.close();
     process.exit();
 });

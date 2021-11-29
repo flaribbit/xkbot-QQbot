@@ -49,6 +49,18 @@ exports.saveConfig = function () {
     });
 }
 
+/**
+ * handle message
+ * @param {object} message message object
+ * @param {object} info additional information
+ * @param {function} reply callback function
+ */
+exports.handle = function (message, info, reply) {
+    plugins.forEach(e => {
+        e.handle(message, info, reply);
+    });
+}
+
 exports.isEnabled = function (group_id) {
     return config.groups.includes(group_id);
 }
