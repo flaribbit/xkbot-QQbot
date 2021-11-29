@@ -6,6 +6,8 @@ const { default: axios } = require("axios");
 // var $ = cheerio.load(data);
 // var content = $(".lemma-summary").text().trim();
 
+exports.name = "baike";
+
 exports.check = function (message, send) {
     if (message.message_type == "group") {
         var send = bot.SendGroupMessage, target = message.group_id;

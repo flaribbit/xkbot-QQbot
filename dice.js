@@ -1,5 +1,7 @@
 const bot = require("./bot")
 
+exports.name = "dice";
+
 exports.check = function (message) {
     if (message.message_type == "group") {
         var send = bot.SendGroupMessage, target = message.group_id;

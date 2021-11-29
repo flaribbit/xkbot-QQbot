@@ -22,6 +22,7 @@ exports.error = function (...args) {
 exports.use = function (plugin) {
     if (plugins.some(e => e.name == plugin.name)) return;
     plugins.push(plugin);
+    return exports;
 }
 
 exports.loadConfig = function () {
@@ -32,10 +33,20 @@ exports.loadConfig = function () {
     } else {
         config = { admin: [], groups: [] };
     }
+    plugins.forEach(e => {
+        if (!e.load) return;
+        exports.info(`插件${e.name}载入配置文件`);
+        e.load();
+    });
 }
 
 exports.saveConfig = function () {
     fs.writeFileSync(CONFIG_PATH, JSON.stringify(config));
+    plugins.forEach(e => {
+        if (!e.save) return;
+        exports.info(`插件${e.name}保存配置文件`);
+        e.save();
+    });
 }
 
 exports.isEnabled = function (group_id) {
