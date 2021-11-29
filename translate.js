@@ -49,7 +49,11 @@ function wordJP(send, target, w) {
             s.push(pane.find(".word-text>h2").text() + " " + pane.find(".pronounces>span:nth-child(1)").text());
             pane.find(".simple h2,li").each((_, l) => s.push($(l).text()));
         });
-        send(target, s.join("\n"));
+        if (s.length) {
+            send(target, s.join("\n"));
+        } else {
+            send(target, `没有找到${w}`);
+        }
     }).catch(e => {
         send(target, e.message);
     });
