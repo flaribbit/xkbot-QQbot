@@ -24,20 +24,7 @@ const wss = new WebSocket.Server({ port: PORT }, () => {
 wss.on('connection', function connection(ws) {
     bot.info("cqhttp已连接");
     ws.on('message', msg => {
-        const message = JSON.parse(msg);
-        // additional message infomation
-        const info = {
-            name: message.sender.card || message.sender.nickname,
-            isAdmin: message.sender.role == 'admin' || bot.isAdmin(message.sender.user_id),
-        };
-        // handle group message
-        if (message.message_type == 'group') {
-            if (!bot.isEnabled(message.group_id)) return;
-            bot.handle(message, info, (msg) => bot.sendGroupMessage(message.group_id, msg));
-        } else if (message.message_type == 'private') {
-            // handle private message
-            bot.handle(message, info, (msg) => bot.sendPrivateMessage(message.user_id, msg));
-        }
+        bot.handle(ws, JSON.parse(msg));
     });
 });
 

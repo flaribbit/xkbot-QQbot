@@ -1,11 +1,10 @@
 const fs = require("fs");
 const dayjs = require("dayjs");
-const CONFIG_PATH = "data/config.json";
+const CONFIG_PATH = "config.json";
 const LOG_LEVEL = ["DEBUG", "INFO", "ERROR"];
 
 var config;
-var client;
-var plugins = [];
+var plugins = {};
 
 function logHeader(level) {
     process.stdout.write(`${dayjs().format("YYYY-MM-DD HH:mm:ss")} [${LOG_LEVEL[level]}] `);
@@ -20,69 +19,74 @@ exports.error = function (...args) {
 }
 
 exports.use = function (plugin) {
-    if (plugins.some(e => e.name == plugin.name)) return;
-    plugins.push(plugin);
+    plugins[plugin.name] = plugin;
     return exports;
 }
 
+exports.getConfig = function () {
+    return config;
+}
+
 exports.loadConfig = function () {
-    if (!fs.existsSync("data")) fs.mkdirSync("data");
     if (fs.existsSync(CONFIG_PATH)) {
         exports.info("加载配置文件");
         config = JSON.parse(fs.readFileSync(CONFIG_PATH));
     } else {
-        config = { admin: [], groups: [] };
+        exports.info("创建配置文件");
+        config = { admin: [], groups: {}, plugins: {} };
     }
-    plugins.forEach(e => {
-        if (!e.load) return;
-        exports.info(`插件${e.name}载入配置文件`);
-        e.load();
-    });
 }
 
 exports.saveConfig = function () {
     fs.writeFileSync(CONFIG_PATH, JSON.stringify(config));
-    plugins.forEach(e => {
-        if (!e.save) return;
+    for (const name in plugins) {
+        if (!plugins[name].save) continue;
         exports.info(`插件${e.name}保存配置文件`);
-        e.save();
-    });
+        plugins[name].save();
+    }
 }
 
 /**
  * handle message
+ * @param {object} client websocket object
  * @param {object} message message object
- * @param {object} info additional information
- * @param {function} reply callback function
  */
-exports.handle = function (message, info, reply) {
-    plugins.forEach(e => {
-        e.handle(message, info, reply);
-    });
+exports.handle = function (client, message) {
+    // additional message infomation
+    const info = {
+        name: message.sender.card || message.sender.nickname,
+        isAdmin: message.sender.role == 'admin' || config.admin.includes(message.user_id),
+    };
+    // handle group message
+    if (message.message_type == 'group') {
+        const reply = (msg) => exports.sendGroupMessage(client, message.group_id, msg);
+        for (const name in config.groups[message.group_id]) {
+            plugins[name].handle(message, info, reply);
+        }
+    } else if (message.message_type == 'private') {
+        // handle private message
+        const reply = (msg) => exports.sendPrivateMessage(client, message.user_id, msg);
+        for (const name in plugins) {
+            plugins[name].handle(message, info, reply);
+        }
+    }
 }
 
-exports.isEnabled = function (group_id) {
-    return config.groups.includes(group_id);
-}
-
-exports.isAdmin = function (user_id) {
-    return config.admin.includes(user_id);
-}
-
-exports.setClient = function (ws) {
-    client = ws;
-}
-
+/**
+ * image message
+ * @param {string} path file path or url
+ */
 exports.image = function (path) {
     return "[CQ:image,file=" + path + "]";
 }
 
 /**
  * send group message
- * @param {number} group_id 
- * @param {string} message 
+ * @param {object} client
+ * @param {number} group_id
+ * @param {string} message
  */
-exports.sendGroupMessage = function (group_id, message) {
+exports.sendGroupMessage = function (client, group_id, message) {
     client.send(JSON.stringify({
         "action": "send_group_msg",
         "params": {
@@ -95,10 +99,11 @@ exports.sendGroupMessage = function (group_id, message) {
 
 /**
  * send private message
+ * @param {object} client
  * @param {number} user_id
  * @param {string} message
  */
-exports.sendPrivateMessage = function (user_id, message) {
+exports.sendPrivateMessage = function (client, user_id, message) {
     client.send(JSON.stringify({
         "action": "send_private_msg",
         "params": {
@@ -108,5 +113,3 @@ exports.sendPrivateMessage = function (user_id, message) {
     }));
     console.log("[info] >>>", message);
 }
-
-exports.loadConfig()
