@@ -41,7 +41,7 @@ exports.SendGroupMessage = function (group_id, message) {
             }
         }));
         console.log("[info] >>>", message);
-    }, Math.random() * 4000 + 1000);
+    }, Math.random() * 1000 + 500);
 }
 
 exports.SendPrivateMessage = function (user_id, message) {
@@ -54,5 +54,5 @@ exports.SendPrivateMessage = function (user_id, message) {
             }
         }));
         console.log("[info] >>>", message);
-    }, Math.random() * 4000 + 1000);
+    }, Math.random() * 1000 + 500);
 }
