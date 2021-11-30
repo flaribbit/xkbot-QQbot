@@ -5,7 +5,8 @@ const WebSocket = require('ws');
 
 // load plugins
 bot.use(require("./plugins/baike"));
-// bot.use(require("./dice"));
+bot.use(require("./plugins/bvinfo"));
+bot.use(require("./plugins/dice"));
 // bot.use(require("./trivia"));
 // bot.use(require("./translate"));
 // bot.use(require("./bililive"));
@@ -13,7 +14,6 @@ bot.use(require("./plugins/baike"));
 // bot.use(require("./zhihu"));
 // bot.use(require("./reply"));
 // bot.use(require("./daxuexi"));
-// bot.use(require("./bvinfo"));
 // bot.use(require("./setu"));
 // bot.use(require("./tio"));
 

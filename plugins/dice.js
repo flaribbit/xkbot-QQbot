@@ -1,18 +1,10 @@
 const bot = require("./bot")
 
 exports.name = "dice";
-
-exports.check = function (message) {
-    if (message.message_type == "group") {
-        var send = bot.SendGroupMessage, target = message.group_id;
-    } else {
-        var send = bot.SendPrivateMessage, target = message.user_id;
-    }
+exports.handle = function (message, info, reply) {
     var text = message.message;
-    var sender = message.sender.card || message.sender.nickname;
     var res;
-    res = text.match(/^[\.。]r ?d?(\d+)?$/);
-    if (res) {
+    if (res = text.match(/^[\.。]r ?d?(\d+)?$/)) {
         if (res[1]) {
             if (res[1] > 200) {
                 send(target, "在 你家骰子这么多面的");
@@ -25,8 +17,7 @@ exports.check = function (message) {
             return true;
         }
     }
-    res = text.match(/^[\.。]draw ?(.*)?$/);
-    if (res) {
+    if (res = text.match(/^[\.。]draw ?(.*)?$/)) {
         if (res[1]) {
             if (res[1] == "地主") {
                 send(target, `${sender}抽到了: ${doudizhu(20)}`);
@@ -44,8 +35,7 @@ exports.check = function (message) {
             return false;
         }
     }
-    res = text.match(/^[\.。]jrrp$/);
-    if (res) {
+    if (res = text.match(/^[\.。]jrrp$/)) {
         send(target, `${sender}今天的人品值是: ${jrrp(message.sender.user_id)}`);
         return true;
     }
