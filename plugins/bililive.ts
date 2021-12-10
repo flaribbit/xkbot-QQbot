@@ -2,14 +2,13 @@
 // online: 在线人数
 // live_status: 是否在线
 // title: 直播间标题
-const DATAPATH = "data/bililive.json";
-const fs = require("fs");
-const bot = require("./bot");
-const axios = require("axios").default;
+import axios from "axios";
+import type { Handle } from "../bot";
+import { sendGroupMessage } from "../bot";
 var watchList = [];
-var timer = 0;
-
-function checkAll(send) {
+var timer: NodeJS.Timer | null;
+exports.name = "bililive";
+function checkAll(reply?: (message: string) => void) {
     console.log("[info] bililive: 检查直播状态");
     watchList.forEach(up => {
         axios.get("https://api.live.bilibili.com/room/v1/Room/get_info?room_id=" + up.room_id).then(res => {
@@ -17,8 +16,8 @@ function checkAll(send) {
                 if (up.status) return;
                 //开播了
                 up.status = true;
-                if (send) {
-                    up.groups.forEach(group => send(group, up.name + "开播了！\nhttps://live.bilibili.com/" + up.room_id));
+                if (reply) {
+                    up.groups.forEach((group: number) => sendGroupMessage(null, group, up.name + "开播了！\nhttps://live.bilibili.com/" + up.room_id));
                 }
             } else {
                 up.status = false;
@@ -30,14 +29,14 @@ function checkAll(send) {
 function start() {
     if (!timer) {
         checkAll();
-        timer = setInterval(checkAll, 120000, bot.SendGroupMessage);
+        timer = setInterval(checkAll, 120000, null);
     }
 }
 
 function stop() {
     if (timer) {
         clearInterval(timer);
-        timer = 0;
+        timer = null;
     }
 }
 
@@ -60,23 +59,18 @@ function add(group, name, room_id) {
     }
 }
 
-exports.check = function (message) {
-    if (message.message_type == "group") {
-        var send = bot.SendGroupMessage, target = message.group_id;
-    } else {
-        var send = bot.SendPrivateMessage, target = message.user_id;
-    }
+export let handle: Handle = function (message, reply, info) {
     var text = message.message;
     var res = text.match(/^\.bililive (\S+) ?(\S+)?$/);
     if (!res) return;
     if (res[1] == "list") {
         var result = [];
         watchList.forEach(up => up.groups.find(e => e == target) ? result.push(up.name + (up.status ? " (直播中)" : "")) : 0);
-        send(target, "本群已关注直播间" + result.length + "个：\n" + result.join("\n"));
+        reply("本群已关注直播间" + result.length + "个：\n" + result.join("\n"));
     } else if (res[1] == "add" && res[2]) {
         axios.get("https://api.bilibili.com/x/web-interface/search/type?search_type=live_user&keyword=" + encodeURIComponent(res[2])).then(res => {
             if (res.data.code != 0) {
-                send(target, "接口返回错误");
+                reply("接口返回错误");
                 return;
             }
             var live_user = res.data.data.result;
@@ -84,9 +78,9 @@ exports.check = function (message) {
                 var name = live_user[0].uname.replace(/<em class="keyword">(.+?)<\/em>/, "$1");
                 var roomid = live_user[0].roomid;
                 add(target, name, roomid);
-                send(target, `已关注${name}(直播间${roomid})`);
+                reply(`已关注${name}(直播间${roomid})`);
             } else {
-                send(target, "找不到" + res[2]);
+                reply("找不到" + res[2]);
             }
         });
     } else if (res[1] == "del" && res[2]) {
@@ -98,27 +92,15 @@ exports.check = function (message) {
             if (index > -1) {
                 up.groups.splice(index, 1);
             }
-            send(target, "已取消关注" + up.name);
+            reply("已取消关注" + up.name);
         } else {
-            send(target, "找不到或没有关注" + up.name);
+            reply("找不到或没有关注" + up.name);
         }
     } else if (res[1] == "start") {
         start();
-        send(target, "直播间监控已开启");
+        reply("直播间监控已开启");
     } else if (res[1] == "stop") {
         stop();
-        send(target, "直播间监控已关闭");
+        reply("直播间监控已关闭");
     }
-}
-
-exports.load = function () {
-    if (fs.existsSync(DATAPATH)) {
-        watchList = JSON.parse(fs.readFileSync(DATAPATH));
-        console.log("[info] bililive: 已载入数据");
-    }
-}
-
-exports.save = function () {
-    fs.writeFileSync(DATAPATH, JSON.stringify(watchList));
-    console.log("[info] bililive: 已保存数据");
 }

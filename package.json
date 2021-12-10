@@ -12,7 +12,12 @@
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.3",
     "dayjs": "^1.10.4",
+    "esbuild": "^0.14.2",
+    "esbuild-runner": "^2.2.1",
     "ws": "^7.4.6",
     "zlib": "^1.0.5"
+  },
+  "devDependencies": {
+    "@types/ws": "^8.2.2"
   }
 }

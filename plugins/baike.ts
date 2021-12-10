@@ -1,8 +1,9 @@
-const cheerio = require("cheerio");
-const { default: axios } = require("axios");
+import cheerio from "cheerio";
+import axios from "axios";
+import type { Handle } from "../bot";
 
-exports.name = "baike";
-exports.handle = function (message, info, reply) {
+export let name = "萌娘百科";
+export let handle: Handle = function (message, reply, info) {
     const text = message.message;
     const res = text.match(/^萌娘百科查(.+)$/);
     if (res) {
@@ -11,7 +12,7 @@ exports.handle = function (message, info, reply) {
             const $ = cheerio.load(res.data);
             var s = $("#mf-section-0>p").filter(i => i <= 3).text().trim();
             if (s.length > 200) {
-                s = s.substr(0, 200) + "...";
+                s = s.substring(0, 200) + "...";
             }
             s += "\n" + url;
             reply(s);

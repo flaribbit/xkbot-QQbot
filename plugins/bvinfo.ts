@@ -1,12 +1,13 @@
-const { image } = require("../bot");
-const { default: axios } = require("axios");
-const dayjs = require("dayjs");
+import { image } from "../bot";
+import type { Handle } from "../bot";
+import axios from "axios";
+import dayjs from "dayjs";
 
 const API = "http://api.bilibili.com/x/web-interface/view";
-exports.name = "bvinfo";
-exports.handle = async function (message, info, reply) {
+export let name = "BV号解析";
+export let handle: Handle = async function (message, reply, info) {
     const text = message.message;
-    var res;
+    var res: RegExpMatchArray | null;
     if (res = text.match(/BV[0-9a-zA-Z]{10}/)) {
         reply(await getInfo(res[0]));
         return true;
@@ -19,7 +20,7 @@ exports.handle = async function (message, info, reply) {
     return false;
 }
 
-async function getInfo(bv) {
+async function getInfo(bv: string) {
     const { "data": {
         "data": {
             "bvid": bvid, "aid": avid, "pic": pic, "title": title, "pubdate": pubdate, "desc": desc,
@@ -31,11 +32,11 @@ async function getInfo(bv) {
 ${upname} b23.tv/av${avid} ${bvid}
 ${title}
 ${dayjs(pubdate * 1000).format("YYYY/MM/DD HH:mm:ss")}
-${str(view)}播放 ${str(link)}点赞
+${str(view)}播放 ${str(like)}点赞
 ${str(coin)}硬币 ${str(favorite)}收藏`;
 }
 
-function str(n) {
+function str(n: number) {
     if (n > 1e5) {
         return (n / 10000).toFixed(1) + "w";
     } else {
