@@ -63,7 +63,8 @@ export let handle: Handle = function (message, reply, info) {
         reply("已安装插件: " + Object.keys(plugins).join(", "));
     } else if (res[1] == 'status') {
         if (message.message_type == 'group') {
-            reply("本群已开启插件: " + config.groups[message.group_id].join(", "));
+            const list: string[] = config.groups[message.group_id] || [];
+            reply("本群已开启插件: " + list.join(", "));
         }
     } else if (res[1] == 'on') {
         if (message.message_type == 'group') {
@@ -71,8 +72,11 @@ export let handle: Handle = function (message, reply, info) {
                 reply("无权限操作");
                 return;
             }
-            let list = res[2].split(' ');
-            for (let name of list) {
+            if (!config.groups[message.group_id]) {
+                config.groups[message.group_id] = [];
+            }
+            const list = res[2].split(' ');
+            for (const name of list) {
                 if (!(name in plugins)) continue;
                 config.groups[message.group_id].push(name);
             }
@@ -81,7 +85,7 @@ export let handle: Handle = function (message, reply, info) {
     } else if (res[1] == 'off') {
         if (message.message_type == 'group') {
             if (!info.isAdmin) {
-                reply("权限不足");
+                reply("无权限操作");
                 return;
             }
             let list = res[2].split(' ');
@@ -96,13 +100,13 @@ export let onMessage = function (client: WebSocket, message: Message) {
     // additional message infomation
     const info = {
         name: message.sender.card || message.sender.nickname,
-        isAdmin: message.sender.role == 'admin' || config.admin.includes(message.user_id),
+        isAdmin: message.sender.role == 'admin' || message.sender.role == 'owner' || config.admin.includes(message.user_id),
     };
     // handle group message
     if (message.message_type == 'group') {
         const reply = (msg: string) => sendGroupMessage(client, message.group_id, msg);
         handle(message, reply, info);
-        for (const name in config.groups[message.group_id]) {
+        for (const name of config.groups[message.group_id]) {
             plugins[name].handle(message, reply, info);
         }
     }
@@ -128,7 +132,7 @@ export let sendGroupMessage = function (client: WebSocket, group_id: number, mes
             "message": message
         }
     }));
-    log.info("发送群消息: ", message);
+    log.info("发送群消息:", message);
 }
 
 export let sendPrivateMessage = function (client: WebSocket, user_id: number, message: string) {
@@ -139,7 +143,7 @@ export let sendPrivateMessage = function (client: WebSocket, user_id: number, me
             "message": message
         }
     }));
-    log.info("发送私聊消息: ", message);
+    log.info("发送私聊消息:", message);
 }
 
 export default {
