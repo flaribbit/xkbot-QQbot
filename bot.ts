@@ -2,7 +2,6 @@ import fs from "fs";
 import type { WebSocket } from "ws";
 import dayjs from "dayjs";
 const CONFIG_PATH = "config.json";
-const LOG_LEVEL = ["DEBUG", "INFO", "ERROR"];
 
 export type Plugin = { name: string, handle: Handle, save?: () => void };
 export type Config = { admin: number[], groups: { [id: string]: string[] }, plugins: { [name: string]: Plugin } };
@@ -11,31 +10,35 @@ export type Info = { name: string, isAdmin: boolean };
 export type Handle = (message: Message, reply: (message: string) => void, info: Info) => void;
 
 var config: Config;
-var plugins: { [name: string]: Plugin } = {};
+const plugins: { [name: string]: Plugin } = {};
 
-function logHeader(level: number) {
-    process.stdout.write(`${dayjs().format("YYYY-MM-DD HH:mm:ss")} [${LOG_LEVEL[level]}] `);
+function logHeader(level: string) {
+    process.stdout.write(`${dayjs().format("YYYY-MM-DD HH:mm:ss")} [${level}] `);
 }
-export let log = {
+export const log = {
+    debug(...args: any[]) {
+        logHeader("DEBUG");
+        console.log.apply(this, args);
+    },
     info(...args: any[]) {
-        logHeader(1);
+        logHeader("INFO");
         console.log.apply(this, args);
     },
     error(...args: any[]) {
-        logHeader(2);
+        logHeader("ERROR");
         console.log.apply(this, args);
     },
 }
 
-export let use = function (plugin: Plugin) {
+export const use = function (plugin: Plugin) {
     plugins[plugin.name] = plugin;
 }
 
-export let getConfig = function () {
+export const getConfig = function () {
     return config;
 }
 
-export let loadConfig = function () {
+export const loadConfig = function () {
     log.info("已安装插件: " + Object.keys(plugins).join(", "));
     if (fs.existsSync(CONFIG_PATH)) {
         log.info("加载配置文件");
@@ -46,16 +49,12 @@ export let loadConfig = function () {
     }
 }
 
-export let saveConfig = function () {
+export const saveConfig = function () {
+    log.info("保存配置文件");
     fs.writeFileSync(CONFIG_PATH, JSON.stringify(config));
-    for (const name in plugins) {
-        if (!plugins[name].save) continue;
-        log.info(`插件${name}保存配置文件`);
-        plugins[name].save();
-    }
 }
 
-export let handle: Handle = function (message, reply, info) {
+export const handle: Handle = function (message, reply, info) {
     const text = message.message;
     let res = text.match(/^\.bot (\S+) ?(.*)?/);
     if (!res) return;
@@ -95,10 +94,10 @@ export let handle: Handle = function (message, reply, info) {
     }
 }
 
-export let onMessage = function (client: WebSocket, message: Message) {
+export const onMessage = function (client: WebSocket, message: Message) {
     if (message.post_type != 'message') return;
     // additional message infomation
-    const info = {
+    const info: Info = {
         name: message.sender.card || message.sender.nickname,
         isAdmin: message.sender.role == 'admin' || message.sender.role == 'owner' || config.admin.includes(message.user_id),
     };
@@ -106,6 +105,8 @@ export let onMessage = function (client: WebSocket, message: Message) {
     if (message.message_type == 'group') {
         const reply = (msg: string) => sendGroupMessage(client, message.group_id, msg);
         handle(message, reply, info);
+        const list = config.groups[message.group_id];
+        if (!list) return;
         for (const name of config.groups[message.group_id]) {
             plugins[name].handle(message, reply, info);
         }
@@ -120,29 +121,31 @@ export let onMessage = function (client: WebSocket, message: Message) {
     }
 }
 
-export let image = function (path: string): string {
+export const image = function (path: string): string {
     return `[CQ:image,file=${path}]`;
 }
 
-export let sendGroupMessage = function (client: WebSocket, group_id: number, message: string) {
+export const sendGroupMessage = function (client: WebSocket, group_id: number, message: string) {
     client.send(JSON.stringify({
         "action": "send_group_msg",
         "params": {
             "group_id": group_id,
-            "message": message
+            "message": message,
         }
     }));
+    if (message.startsWith("[CQ:image,file=base64")) message = "[图片]";
     log.info("发送群消息:", message);
 }
 
-export let sendPrivateMessage = function (client: WebSocket, user_id: number, message: string) {
+export const sendPrivateMessage = function (client: WebSocket, user_id: number, message: string) {
     client.send(JSON.stringify({
         "action": "send_private_msg",
         "params": {
             "user_id": user_id,
-            "message": message
+            "message": message,
         }
     }));
+    if (message.startsWith("[CQ:image,file=base64")) message = "[图片]";
     log.info("发送私聊消息:", message);
 }
 

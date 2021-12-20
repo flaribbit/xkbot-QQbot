@@ -1,8 +1,8 @@
 # xkbot
 
-为了方便自己的某些需求而编写的机器人，缓慢更新中
+为了方便自己而编写的机器人，缓慢更新中
 
-## 目前功能
+## ~~目前功能~~ 正在重构
 
 | 指令                 | 描述                   |
 | -------------------- | ---------------------- |
@@ -25,18 +25,17 @@
 
 参考下面的代码
 
-```js
-const bot = require("./bot");
-
-exports.check = function (message) {
-    var text = message.message;
-    var send = message.message_type == "group" ? bot.SendGroupMessage : bot.SendPrivateMessage;
-    var sender = message.sender.card || message.sender.nickname;
-    var target = message.group_id || message.user_id;
-    var res = text.match(/^.weibo ?(\d+)$/);
-    if (res) {
-        //send(target, ...);
-        return true;
-    }
+```ts
+// plugins/myplugin.ts
+import type { Handle } from "../bot";
+export const name = "插件名";
+export const handle: Handle = function (message, reply, info) {
+    reply("你好");
 }
+```
+
+然后在 `index.ts` 中添加
+
+```ts
+bot.use(require("./plugins/myplugin"));
 ```

@@ -18,7 +18,7 @@ bot.loadConfig();
 
 process.on("SIGINT", () => {
     bot.saveConfig();
-    log.info("Websocket Server closed")
+    log.info("Websocket Server closed");
     wss.close();
     process.exit();
 });
