@@ -5,6 +5,8 @@ import { Server } from "ws";
 bot.use(require("./plugins/baike"));
 bot.use(require("./plugins/bvinfo"));
 bot.use(require("./plugins/setu"));
+bot.use(require("./plugins/dice"));
+bot.use(require("./plugins/throwit"));
 
 const PORT = parseInt(process.env.PORT) || 5700;
 const wss = new Server({ port: PORT }, () => {
