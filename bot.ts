@@ -66,6 +66,7 @@ export const handle: Handle = function (message, reply, info) {
             reply("本群已开启插件: " + list.join(", "));
         }
     } else if (res[1] == 'on') {
+        if (!res[2]) return reply("请输入插件名称");
         if (message.message_type == 'group') {
             if (!info.isAdmin) {
                 reply("无权限操作");
@@ -82,6 +83,7 @@ export const handle: Handle = function (message, reply, info) {
             reply("已开启插件: " + res[2]);
         }
     } else if (res[1] == 'off') {
+        if (!res[2]) return reply("请输入插件名称");
         if (message.message_type == 'group') {
             if (!info.isAdmin) {
                 reply("无权限操作");
