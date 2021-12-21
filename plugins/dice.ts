@@ -16,7 +16,7 @@ const mahjong_tiles = [
 ]
 
 async function dice_mahjong() {
-    const mahjong = await loadImage("data/mahjong.png")
+    const mahjong = await loadImage("./assets/mahjong.png")
     const canvas = createCanvas(1120, 130)
     const ctx = canvas.getContext("2d")
 
