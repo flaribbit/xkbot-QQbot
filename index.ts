@@ -7,6 +7,7 @@ bot.use(require("./plugins/bvinfo"));
 bot.use(require("./plugins/setu"));
 bot.use(require("./plugins/dice"));
 bot.use(require("./plugins/throwit"));
+bot.use(require("./plugins/latex"));
 
 const PORT = parseInt(process.env.PORT) || 5700;
 const wss = new Server({ port: PORT }, () => {
@@ -14,7 +15,13 @@ const wss = new Server({ port: PORT }, () => {
 });
 wss.on('connection', ws => {
     log.info("cqhttp已连接");
-    ws.on('message', (msg: string) => bot.onMessage(ws, JSON.parse(msg)));
+    ws.on('message', (msg: string) => {
+        try {
+            bot.onMessage(ws, JSON.parse(msg));
+        } catch (e) {
+            log.error(e);
+        }
+    });
 });
 bot.loadConfig();
 
