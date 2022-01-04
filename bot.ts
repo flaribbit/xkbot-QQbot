@@ -39,7 +39,7 @@ export const getConfig = function () {
 }
 
 export const loadConfig = function () {
-    log.info("已安装插件: " + Object.keys(plugins).join(", "));
+    log.info("已安装插件: " + Object.keys(plugins).join(" "));
     if (fs.existsSync(CONFIG_PATH)) {
         log.info("加载配置文件");
         config = JSON.parse(fs.readFileSync(CONFIG_PATH, "utf8"));
@@ -62,8 +62,12 @@ export const handle: Handle = function (message, reply, info) {
         reply("已安装插件: " + Object.keys(plugins).join(", "));
     } else if (res[1] == 'status') {
         if (message.message_type == 'group') {
-            const list: string[] = config.groups[message.group_id] || [];
-            reply("本群已开启插件: " + list.join(", "));
+            const list = config.groups[message.group_id];
+            if (list) {
+                reply("本群已开启插件: " + list.join(", "));
+            } else {
+                reply("本群未开启任何插件");
+            }
         }
     } else if (res[1] == 'on') {
         if (!res[2]) return reply("请输入插件名称");
@@ -72,12 +76,12 @@ export const handle: Handle = function (message, reply, info) {
                 reply("无权限操作");
                 return;
             }
-            if (!config.groups[message.group_id]) {
-                config.groups[message.group_id] = [];
-            }
+            // 创建群组配置
+            if (!config.groups[message.group_id]) config.groups[message.group_id] = [];
             const list = res[2].split(' ');
             for (const name of list) {
                 if (!(name in plugins)) continue;
+                if (config.groups[message.group_id].includes(name)) continue;
                 config.groups[message.group_id].push(name);
             }
             reply("已开启插件: " + res[2]);
