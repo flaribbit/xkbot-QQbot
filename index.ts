@@ -8,6 +8,7 @@ bot.use(require("./plugins/setu"));
 bot.use(require("./plugins/dice"));
 bot.use(require("./plugins/throwit"));
 bot.use(require("./plugins/latex"));
+bot.use(require("./plugins/techmino"));
 
 const PORT = parseInt(process.env.PORT) || 5700;
 const wss = new Server({ port: PORT }, () => {
