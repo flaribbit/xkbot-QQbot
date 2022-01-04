@@ -1,9 +1,10 @@
-import { Handle } from "../bot"
+import { Handle, log } from "../bot"
 import { createCanvas, loadImage } from "node-canvas"
 
 export const name = "dice"
 export const handle: Handle = function (message, reply, info) {
     if (message.message == ".dice") {
+        log.info(`dice from ${info.name}(${message.user_id})`)
         dice_mahjong().then(data => reply(`[CQ:image,file=base64://${data}]`))
     }
 }
