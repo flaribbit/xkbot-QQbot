@@ -14,6 +14,7 @@ export let handle: Handle = async function (message, reply, info) {
     }
     if (res = text.match(/https:\/\/b23.tv\/[0-9a-zA-Z]+/)) {
         res = await axios.get(res[0], { maxRedirects: 0 }).catch(err => err.response.headers.location.match(/BV[0-9a-zA-Z]{10}/));
+        if (!res) return false;
         reply(await getInfo(res[0]));
         return true;
     }
