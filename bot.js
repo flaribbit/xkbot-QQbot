@@ -47,11 +47,55 @@ exports.saveConfig = function () {
 }
 
 /**
+ * handle message for bot command
+ * @param {object} message 
+ * @param {object} info 
+ * @param {(msg: string)=>null} reply 
+ * @returns 
+ */
+exports.handle = function (message, info, reply) {
+    const text = message.message;
+    let res = text.match(/^\.bot (\S+) ?(.*)?/);
+    if (!res) return;
+    if (res[1] == 'plugins') {
+        reply("已安装插件：" + Object.keys(plugins).join(", "));
+    } else if (res[1] == 'status') {
+        if (message.message_type == 'group') {
+            reply("本群已开启插件：" + config.groups[message.group_id].join(", "));
+        }
+    } else if (res[1] == 'on') {
+        if (message.message_type == 'group') {
+            if (!info.isAdmin) {
+                reply("权限不足");
+                return;
+            }
+            let list = res[2].split(' ');
+            for (let name of list) {
+                if (!name in plugins) continue;
+                config.groups[message.group_id].push(name);
+            }
+            reply("已开启插件：" + res[2]);
+        }
+    } else if (res[1] == 'off') {
+        if (message.message_type == 'group') {
+            if (!info.isAdmin) {
+                reply("权限不足");
+                return;
+            }
+            let list = res[2].split(' ');
+            config.groups[message.group_id] = config.groups[message.group_id].filter(name => !list.includes(name));
+            reply("已关闭插件：" + res[2]);
+        }
+    }
+}
+
+/**
  * handle message
  * @param {object} client websocket object
  * @param {object} message message object
  */
-exports.handle = function (client, message) {
+exports.onMessage = function (client, message) {
+    if (message.post_type != 'message') return;
     // additional message infomation
     const info = {
         name: message.sender.card || message.sender.nickname,
@@ -60,12 +104,14 @@ exports.handle = function (client, message) {
     // handle group message
     if (message.message_type == 'group') {
         const reply = (msg) => exports.sendGroupMessage(client, message.group_id, msg);
+        exports.handle(message, info, reply);
         for (const name in config.groups[message.group_id]) {
             plugins[name].handle(message, info, reply);
         }
     } else if (message.message_type == 'private') {
         // handle private message
         const reply = (msg) => exports.sendPrivateMessage(client, message.user_id, msg);
+        exports.handle(message, info, reply);
         for (const name in plugins) {
             plugins[name].handle(message, info, reply);
         }
@@ -94,7 +140,7 @@ exports.sendGroupMessage = function (client, group_id, message) {
             "message": message
         }
     }));
-    console.log("[info] >>>", message);
+    exports.info("发送群消息：", message);
 }
 
 /**
@@ -111,5 +157,5 @@ exports.sendPrivateMessage = function (client, user_id, message) {
             "message": message
         }
     }));
-    console.log("[info] >>>", message);
+    exports.info("发送私聊消息：", message);
 }
