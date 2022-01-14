@@ -6,14 +6,18 @@ export const name = "latex"
 export const handle: Handle = (message, reply, info) => {
     const res = message.message.match(/\$(.+?)\$/)
     if (res) {
-        latex_codecogs(res[1])
+        latex_zhihu(res[1])
             .then(data => reply(data))
             .catch(_ => reply("你好 炸了"))
     }
 }
 
 async function latex_zhihu(tex: string) {
-    const image = await loadImage("https://www.zhihu.com/equation?tex=" + encodeURIComponent(tex.replace(/&amp;/g, "&")))
+    const url = "https://www.zhihu.com/equation?tex=" + encodeURIComponent(tex.replace(/&amp;/g, "&"))
+    const res = await axios.get(url, { responseType: "arraybuffer" })
+    if (!res.data) return "接口错误"
+    if (res.data[55] == 0x30) return "[图片为空]"
+    const image = await loadImage(Buffer.from(res.data))
     if (image.width > 1000) return "[图片过大]"
     // enlarge the svg image
     image.width *= 2
