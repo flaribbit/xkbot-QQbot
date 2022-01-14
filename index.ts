@@ -8,5 +8,6 @@ bot.use(require("./plugins/dice"))
 bot.use(require("./plugins/throwit"))
 bot.use(require("./plugins/latex"))
 bot.use(require("./plugins/techmino"))
+bot.use(require("./plugins/translate"))
 
 bot.run()
