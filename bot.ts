@@ -1,7 +1,6 @@
 import fs from "fs";
-import type { WebSocket } from "ws";
+import { WebSocket, Server } from "ws";
 import dayjs from "dayjs";
-const CONFIG_PATH = "config.json";
 
 export type Plugin = { name: string, handle: Handle, save?: () => void };
 export type Config = { admin: number[], groups: { [id: string]: string[] }, plugins: { [name: string]: Plugin } };
@@ -10,6 +9,7 @@ export type Info = { name: string, isAdmin: boolean };
 export type Handle = (message: Message, reply: (message: string) => void, info: Info) => void;
 
 var config: Config;
+const CONFIG_PATH = "config.json";
 const plugins: { [name: string]: Plugin } = {};
 
 function logHeader(level: string) {
@@ -52,6 +52,29 @@ export const loadConfig = function () {
 export const saveConfig = function () {
     log.info("保存配置文件");
     fs.writeFileSync(CONFIG_PATH, JSON.stringify(config));
+}
+
+export const run = function (port: number = 5700) {
+    const wss = new Server({ port: port }, () => {
+        log.info("WebSocket Server started on port " + port);
+    });
+    wss.on('connection', ws => {
+        log.info("cqhttp已连接");
+        ws.on('message', (msg: string) => {
+            try {
+                onMessage(ws, JSON.parse(msg));
+            } catch (e) {
+                log.error(e);
+            }
+        });
+    });
+    process.on("SIGINT", () => {
+        saveConfig();
+        log.info("Websocket Server closed");
+        wss.close();
+        process.exit();
+    });
+    loadConfig();
 }
 
 export const handle: Handle = function (message, reply, info) {
@@ -157,7 +180,5 @@ export const sendPrivateMessage = function (client: WebSocket, user_id: number, 
 
 export default {
     use,
-    loadConfig,
-    saveConfig,
-    onMessage,
+    run,
 }
