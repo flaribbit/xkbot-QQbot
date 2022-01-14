@@ -82,12 +82,12 @@ export const handle: Handle = function (message, reply, info) {
     let res = text.match(/^\.bot (\S+) ?(.*)?/);
     if (!res) return;
     if (res[1] == 'plugins') {
-        reply("已安装插件: " + Object.keys(plugins).join(", "));
+        reply("已安装插件: " + Object.keys(plugins).join(" "));
     } else if (res[1] == 'status') {
         if (message.message_type == 'group') {
             const list = config.groups[message.group_id];
             if (list) {
-                reply("本群已开启插件: " + list.join(", "));
+                reply("本群已开启插件: " + list.join(" "));
             } else {
                 reply("本群未开启任何插件");
             }
