@@ -2,6 +2,45 @@
 
 为了方便自己而编写的机器人，缓慢更新中
 
+## 如何编写自己的插件
+
+在 `plugins/myplugin.ts` 中编写
+
+```ts
+// plugins/myplugin.ts
+import type { Handle } from "../bot"
+export const name = "插件名"
+export const handle: Handle = function (message, reply, info) {
+    reply("你好")
+}
+```
+
+然后在 `index.ts` 中添加
+
+```ts
+bot.use(require("./plugins/myplugin"))
+```
+
+无情的说“你好”机器就诞生啦！
+
+如果需要异步的函数，那就这样
+
+```ts
+// plugins/myplugin.ts
+import type { Handle } from "../bot"
+export const name = "插件名"
+export const handle: Handle = function (message, reply, info) {
+    foo(message.message).then(reply).catch(e=>reply("炸了"))
+}
+
+async function foo(msg: string): Promise<string> {
+    // 可以在这里用 await 啦
+    return "bar"
+}
+```
+
+或者干脆把 `reply` 也传过去！就不用 `then` 啦！
+
 ## ~~目前功能~~ 正在重构
 
 | 指令                 | 描述                   |
@@ -20,22 +59,3 @@
 | .bililive del 用户名 | 取消关注直播间         |
 | .bililive start      | 开始直播间监控         |
 | .bililive stop       | 停止直播间监控         |
-
-## 如何增加功能
-
-参考下面的代码
-
-```ts
-// plugins/myplugin.ts
-import type { Handle } from "../bot";
-export const name = "插件名";
-export const handle: Handle = function (message, reply, info) {
-    reply("你好");
-}
-```
-
-然后在 `index.ts` 中添加
-
-```ts
-bot.use(require("./plugins/myplugin"));
-```
