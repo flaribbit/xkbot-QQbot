@@ -1,12 +1,14 @@
-import { Handle } from "../bot"
+import { Handle, unescape } from "../bot"
 import { createCanvas, loadImage } from "node-canvas"
 import axios from "axios"
 
 export const name = "latex"
 export const handle: Handle = (message, reply, info) => {
-    const res = message.message.match(/\$(.+?)\$/)
-    if (res) {
-        latex_zhihu(res[1])
+    const text = message.message
+    var res: RegExpMatchArray | null
+    if ((res = text.match(/\$(.+?)\$/)) ||
+        (res = text.match(/\$\$([\s\S]+?)\$\$/))) {
+        latex_zhihu(unescape(res[1]))
             .then(data => reply(data))
             .catch(_ => reply("你好 炸了"))
     }
