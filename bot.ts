@@ -107,6 +107,7 @@ export const handle: Handle = function (message, reply, info) {
                 if (config.groups[message.group_id].includes(name)) continue
                 config.groups[message.group_id].push(name)
             }
+            saveConfig()
             reply("已开启插件: " + res[2])
         }
     } else if (res[1] == 'off') {
@@ -118,6 +119,7 @@ export const handle: Handle = function (message, reply, info) {
             }
             let list = res[2].split(' ')
             config.groups[message.group_id] = config.groups[message.group_id].filter(name => !list.includes(name))
+            saveConfig()
             reply("已关闭插件: " + res[2])
         }
     }
