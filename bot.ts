@@ -2,7 +2,7 @@ import fs from "fs"
 import { WebSocket, Server } from "ws"
 import dayjs from "dayjs"
 
-export type Plugin = { name: string, handle: Handle, save?: () => void }
+export type Plugin = { name: string, handle: Handle, help?: string }
 export type Config = { admin: number[], groups: { [id: string]: string[] }, plugins: { [name: string]: Plugin } }
 export type Message = { post_type: string, message: string, self_id: number, user_id: number, group_id?: number, message_type: string, sender: { card: string, nickname: string, role: string } }
 export type Info = { name: string, isAdmin: boolean }
@@ -121,6 +121,22 @@ export const handle: Handle = function (message, reply, info) {
             config.groups[message.group_id] = config.groups[message.group_id].filter(name => !list.includes(name))
             saveConfig()
             reply("已关闭插件: " + res[2])
+        }
+    } else if (res[1] == 'help') {
+        if (!res[2]) {
+            return reply(
+                "使用说明: \n" +
+                "  .bot plugins 查看已安装插件\n" +
+                "  .bot status 查看插件状态\n" +
+                "  .bot on <插件名称> 开启插件\n" +
+                "  .bot off <插件名称> 关闭插件\n" +
+                "  .bot help <插件名称> 查看插件说明")
+        } else {
+            if (res[2] in plugins) {
+                reply(plugins[res[2]].help || "这个插件没有说明")
+            } else {
+                reply("未找到插件: " + res[2])
+            }
         }
     }
 }

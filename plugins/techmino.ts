@@ -3,9 +3,10 @@ import { inflateSync } from "zlib"
 import { createCanvas, CanvasRenderingContext2D } from "node-canvas"
 
 export const name = "techmino"
+export const help = "把Techmino场地代码转换成图片"
 export const handle: Handle = (message, reply, info) => {
     if (message.message.startsWith(header)) {
-        reply(`[CQ:image,file=base64://${draw(message.message.trimEnd())}]`)
+        reply(draw(message.message.trimEnd()))
     }
 }
 
@@ -63,5 +64,5 @@ function draw(str: string) {
     ctx.fillStyle = "#f3f3ed"
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     drawField(ctx, field, drawheight)
-    return canvas.toBuffer().toString("base64")
+    return `[CQ:image,file=base64://${canvas.toBuffer().toString("base64")}]`
 }

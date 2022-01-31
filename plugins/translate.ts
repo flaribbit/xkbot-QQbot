@@ -3,6 +3,7 @@ import cheerio from "cheerio"
 import axios from "axios"
 
 export const name = "翻译"
+export const help = ".en <word> 查询英语翻译\n.jp <word> 查询日语翻译"
 export const handle: Handle = function (message, reply, info) {
     const text = message.message
     var res: RegExpMatchArray | null

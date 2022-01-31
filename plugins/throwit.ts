@@ -2,11 +2,12 @@ import type { Handle } from "../bot"
 import { createCanvas, loadImage } from "node-canvas"
 
 export const name = "丢人"
+export const help = "/丢 <@xxx>\n/丢 <QQ号>"
 export const handle: Handle = (message, reply, info) => {
     const res = message.message.match(/^\/丢 ?(?:\[CQ:at,qq=(\d+)\]|(\d+))/)
     if (res) {
         const user_id = res[1] || res[2]
-        throw_it(user_id).then(data => reply(`[CQ:image,file=base64://${data}]`))
+        throw_it(user_id).then(reply).catch(e => reply("错误: " + e.message))
     }
 }
 
@@ -30,5 +31,5 @@ async function throw_it(user_id: string) {
     // draw template image
     ctx.globalCompositeOperation = "destination-over"
     ctx.drawImage(template, 0, 0)
-    return canvas.toBuffer("image/png").toString("base64")
+    return `[CQ:image,file=base64://${canvas.toBuffer().toString("base64")}]`
 }

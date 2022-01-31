@@ -3,6 +3,7 @@ import { createCanvas, loadImage } from "node-canvas"
 import axios from "axios"
 
 export const name = "latex"
+export const help = "把消息中的latex代码转换为图片，使用知乎接口，格式为$单行公式$ $$多行公式$$"
 export const handle: Handle = (message, reply, info) => {
     const text = message.message
     var res: RegExpMatchArray | null

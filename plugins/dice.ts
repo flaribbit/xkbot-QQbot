@@ -2,10 +2,11 @@ import { Handle, log } from "../bot"
 import { createCanvas, loadImage } from "node-canvas"
 
 export const name = "dice"
+export const help = "发送.dice抽取麻将牌"
 export const handle: Handle = function (message, reply, info) {
     if (message.message == ".dice") {
         log.info(`dice from ${info.name}(${message.user_id})`)
-        dice_mahjong().then(data => reply(`[CQ:image,file=base64://${data}]`))
+        dice_mahjong().then(reply).catch(e => reply("错误: " + e.message))
     }
 }
 
@@ -41,8 +42,8 @@ async function dice_mahjong() {
     ]
     let hand: number[] = []
     for (let i = 0; i < 14; i++) {
-        let index = Math.floor(Math.random() * cards.length);
-        hand.push(cards.splice(index, 1)[0]);
+        let index = Math.floor(Math.random() * cards.length)
+        hand.push(cards.splice(index, 1)[0])
     }
     hand.sort((a, b) => a - b)
     hand.forEach((c, i) => {
@@ -50,5 +51,5 @@ async function dice_mahjong() {
         const [x, y] = [tile_id / 5 << 0, tile_id % 5]
         ctx.drawImage(mahjong, x * 81, y * 130, 80, 129, i * 80, 0, 80, 129)
     })
-    return canvas.toBuffer().toString("base64");
+    return `[CQ:image,file=base64://${canvas.toBuffer().toString("base64")}]`
 }
