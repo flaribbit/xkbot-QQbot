@@ -36,9 +36,8 @@ ${str(coin)}硬币 ${str(favorite)}收藏`
 }
 
 async function shortLink(url: string) {
-    const res = await axios.get(url, { maxRedirects: 0 })
-    const bvid = res.headers.location.match(/BV[0-9a-zA-Z]{10}/)
-    return await getInfo(bvid[0])
+    const res = await axios.get(url, { maxRedirects: 0 }).catch(r => r.response)
+    return await getInfo(res.headers.location.match(/BV[0-9a-zA-Z]{10}/)[0])
 }
 
 function str(n: number) {
@@ -49,6 +48,6 @@ function str(n: number) {
     }
 }
 
-if (require.main === module) {
-    handle({ message: "https://b23.tv/BV1Vs41187Gt" } as any, console.log, {} as any)
-}
+// if (require.main === module) {
+//     handle({ message: "https://b23.tv/ygPbfQP" } as any, console.log, {} as any)
+// }
