@@ -1,10 +1,10 @@
 {
   "name": "xkbot",
   "version": "0.0.1",
-  "description": "QQ bot uses CoolQ.",
+  "description": "QQ bot under go-cqhttp",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js"
+    "start": "esr index.ts"
   },
   "author": "flaribbit",
   "license": "ISC",
