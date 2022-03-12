@@ -3,7 +3,7 @@ import axios from "axios"
 const API = "https://setu.flaribbit.workers.dev/"
 
 export const name = "色图"
-export const help = "随机发送一张色图"
+export const help = "随机发送一张全年龄色图，需要@我 来张色图"
 export const handle: Handle = function (message, reply, info) {
     const text = message.message
     if (message.message_type == "group") {

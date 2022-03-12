@@ -4,7 +4,7 @@ import dayjs from "dayjs"
 
 const API = "http://api.bilibili.com/x/web-interface/view"
 export let name = "BV号解析"
-export let help = "消息中包含B站视频链接或BV号时会自动解析"
+export let help = "当消息中包含BV号或者B站视频链接时，解析视频封面和基本信息"
 export let handle: Handle = function (message, reply, info) {
     const text = message.message
     var res: RegExpMatchArray | null
