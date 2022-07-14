@@ -43,7 +43,7 @@ go-cqhttp 开启**反向ws，端口 5700**
 
 ### latex.ts
 当消息中包含latex公式时，渲染成图片
-- `\frac{\pi}{2}`
+- `$\frac{\pi}{2}$`
 
 ### setu.ts
 随机色图，图库我自己建的
@@ -60,8 +60,8 @@ go-cqhttp 开启**反向ws，端口 5700**
 
 ### translate.ts
 词典工具
-- `.en <word>` 英中
-- `.jp <word>` 日中
+- `/en <word>` 英中
+- `/jp <word>` 日中
 
 ## 如何编写自己的插件
 
