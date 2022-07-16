@@ -9,5 +9,6 @@ bot.use(require("./plugins/throwit"))
 bot.use(require("./plugins/latex"))
 bot.use(require("./plugins/techmino"))
 bot.use(require("./plugins/translate"))
+bot.use(require("./plugins/chat"))
 
 bot.run()
