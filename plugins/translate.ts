@@ -9,7 +9,7 @@ export const handle: Handle = function (message, reply, info) {
     var res: RegExpMatchArray | null
     if (res = text.match(/^\/en ?(.+)$/)) {
         translate_en(res[1]).then(reply).catch(e => reply(e.message))
-    } else if (res = text.match(/^(?:\/jp|。ｊｐ) ?(.+)$/)) {
+    } else if (res = text.match(/^(?:\/jp|\/ｊｐ) ?(.+)$/)) {
         translate_jp(res[1]).then(reply).catch(e => reply(e.message))
     }
 }
@@ -20,7 +20,7 @@ async function translate_en(word: string): Promise<string> {
     if (data && data.explain) {
         if (data.explain.word) {
             const e = data.explain
-            return e.word + "\n" + e.phonetic["英"] + e.phonetic["美"] + "\n" + e.translation.join("\n")
+            return e.word + "\n英: " + e.phonetic["英"] + ", 美: " + e.phonetic["美"] + "\n" + e.translation.join("\n")
         } else {
             return data.fanyi
         }
