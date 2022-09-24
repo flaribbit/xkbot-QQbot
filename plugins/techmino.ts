@@ -1,6 +1,6 @@
 import type { Handle } from "../bot"
 import { inflateSync } from "zlib"
-import { createCanvas, CanvasRenderingContext2D } from "node-canvas"
+import { createCanvas, CanvasRenderingContext2D } from "canvas"
 
 export const name = "techmino"
 export const help = "把Techmino场地代码转换成图片"

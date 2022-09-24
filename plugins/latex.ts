@@ -1,5 +1,5 @@
 import { Handle, unescape } from "../bot"
-import { createCanvas, loadImage } from "node-canvas"
+import { createCanvas, loadImage } from "canvas"
 import axios from "axios"
 
 export const name = "latex"

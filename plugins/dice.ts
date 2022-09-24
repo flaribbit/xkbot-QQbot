@@ -1,5 +1,5 @@
 import { Handle, log } from "../bot"
-import { createCanvas, loadImage } from "node-canvas"
+import { createCanvas, loadImage } from "canvas"
 
 export const name = "dice"
 export const help = "发送.dice抽取麻将牌"

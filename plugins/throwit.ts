@@ -1,5 +1,5 @@
 import type { Handle } from "../bot"
-import { createCanvas, loadImage } from "node-canvas"
+import { createCanvas, loadImage } from "canvas"
 
 export const name = "丢人"
 export const help = "/丢 <@xxx>\n/丢 <QQ号>"
