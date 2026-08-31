@@ -3,14 +3,41 @@ import { load } from "cheerio"
 import axios from "axios"
 
 export const name = "翻译"
-export const help = "/en <word> 查询英语翻译\n/jp <word> 查询日语翻译"
+export const help = ".en 或 /en 切换英中查单词模式\n/en <word> 查询英语翻译\n.jp 或 /jp 切换日中查单词模式\n/jp <word> 查询日语翻译"
+const enMode = new Set<string>()
+const jpMode = new Set<string>()
 export const handle: Handle = function (message, reply, info) {
-    const text = message.message
+    const text = message.message.trim()
+    if (!text) return
+    const key = message.message_type == "group" ? (message.group_id || 0) + "-" + message.user_id : "private-" + message.user_id
     var res: RegExpMatchArray | null
-    if (res = text.match(/^\/en ?(.+)$/)) {
-        translate_en(res[1]).then(reply).catch(e => reply(e.message))
-    } else if (res = text.match(/^(?:\/jp|\/ｊｐ) ?(.+)$/)) {
-        translate_jp(res[1]).then(reply).catch(e => reply(e.message))
+    if (res = text.match(/^(?:\/en|\.en)(?:\s+(.*))?$/)) {
+        const word = res[1] ? res[1].trim() : ""
+        if (word) {
+            translate_en(word).then(reply).catch(e => reply(e.message))
+        } else {
+            enMode.has(key) ? enMode.delete(key) : enMode.add(key)
+            reply(enMode.has(key) ? "英中查单词模式已开启，直接发送单词即可查询" : "英中查单词模式已关闭")
+        }
+        return
+    }
+    if (res = text.match(/^(?:\/jp|\/ｊｐ|\.jp)(?:\s+(.*))?$/)) {
+        const word = res[1] ? res[1].trim() : ""
+        if (word) {
+            translate_jp(word).then(reply).catch(e => reply(e.message))
+        } else {
+            jpMode.has(key) ? jpMode.delete(key) : jpMode.add(key)
+            reply(jpMode.has(key) ? "日中查单词模式已开启，直接发送单词即可查询" : "日中查单词模式已关闭")
+        }
+        return
+    }
+    if ((enMode.has(key) || jpMode.has(key)) && !/^[.\/]/.test(text)) {
+        if (enMode.has(key)) {
+            translate_en(text).then(reply).catch(e => reply(e.message))
+        }
+        if (jpMode.has(key)) {
+            translate_jp(text).then(reply).catch(e => reply(e.message))
+        }
     }
 }
 
