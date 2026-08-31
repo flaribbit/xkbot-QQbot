@@ -9,7 +9,7 @@
   "author": "flaribbit",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^1.6.0",
     "canvas": "^2.10.1",
     "cheerio": "^1.0.0-rc.3",
     "dayjs": "^1.10.4",
